@@ -55,7 +55,7 @@ tape("voronoiMap.minWeightRatio(...) should set the specified ratio", function(t
   test.end();
 });
 
-tape("weightedVoronoi.(...) should compute Voronoï treemap", function(test) {
+tape("voronoiMap.(...) should compute Voronoï map", function(test) {
   test.test("basic use case", function(test) {
     var voronoiMap = d3VoronoiMap.voronoiMap().maxIterationCount(1),
         data = [{weight: 1}, {weight: 1}],

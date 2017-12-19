@@ -259,19 +259,19 @@
     ///////////////////////
 
     function adapt(polygons, flickeringMitigationRatio) {
-      var adaptedTreemapPoints;
+      var adaptedMapPoints;
       
       adaptPlacements(polygons, flickeringMitigationRatio);
-      adaptedTreemapPoints = polygons.map(function(p) { return p.site.originalObject; });
-      polygons = wVoronoi(adaptedTreemapPoints);
+      adaptedMapPoints = polygons.map(function(p) { return p.site.originalObject; });
+      polygons = wVoronoi(adaptedMapPoints);
       if (polygons.length<siteCount) {
         console.log("at least 1 site has no area, which is not supposed to arise");
         debugger;
       }
       
       adaptWeights(polygons, flickeringMitigationRatio);
-      adaptedTreemapPoints = polygons.map(function(p) { return p.site.originalObject; });
-      polygons = wVoronoi(adaptedTreemapPoints);
+      adaptedMapPoints = polygons.map(function(p) { return p.site.originalObject; });
+      polygons = wVoronoi(adaptedMapPoints);
       if (polygons.length<siteCount) {
         console.log("at least 1 site has no area, which is not supposed to arise");
         debugger;
@@ -281,72 +281,72 @@
     };
 
     function adaptPlacements(polygons, flickeringMitigationRatio) {
-      var newTreemapPoints = [],
+      var newMapPoints = [],
           flickeringInfluence = 0.5;
-      var flickeringMitigation, d, polygon, treemapPoint, centroid, dx, dy;
+      var flickeringMitigation, d, polygon, mapPoint, centroid, dx, dy;
       
       flickeringMitigation = flickeringInfluence*flickeringMitigationRatio;
       d = 1-flickeringMitigation  // in [0.5, 1]
       for(var i=0; i<siteCount; i++) {
         polygon = polygons[i];
-        treemapPoint = polygon.site.originalObject;
+        mapPoint = polygon.site.originalObject;
         centroid = d3Polygon.polygonCentroid(polygon);
         
-        dx = centroid[0] - treemapPoint.x;
-        dy = centroid[1] - treemapPoint.y;
+        dx = centroid[0] - mapPoint.x;
+        dy = centroid[1] - mapPoint.y;
         
         //begin: handle excessive change;
         dx *= d;
         dy *= d;
         //end: handle excessive change;
         
-        treemapPoint.x += dx;
-        treemapPoint.y += dy;
+        mapPoint.x += dx;
+        mapPoint.y += dy;
         
-        newTreemapPoints.push(treemapPoint);
+        newMapPoints.push(mapPoint);
       }
       
-      handleOverweighted(newTreemapPoints);
+      handleOverweighted(newMapPoints);
     };
     
     function adaptWeights(polygons, flickeringMitigationRatio) {
-      var newTreemapPoints = [],
+      var newMapPoints = [],
           flickeringInfluence = 0.1;
-      var flickeringMitigation, polygon, treemapPoint, currentArea, adaptRatio, adaptedWeight;
+      var flickeringMitigation, polygon, mapPoint, currentArea, adaptRatio, adaptedWeight;
       
       flickeringMitigation = flickeringInfluence*flickeringMitigationRatio;
       for(var i=0; i<siteCount; i++) {
         polygon = polygons[i];
-        treemapPoint = polygon.site.originalObject;
+        mapPoint = polygon.site.originalObject;
         currentArea = d3Polygon.polygonArea(polygon);
-        adaptRatio = treemapPoint.targetedArea/currentArea;
+        adaptRatio = mapPoint.targetedArea/currentArea;
         
         //begin: handle excessive change;
         adaptRatio = Math.max(adaptRatio, (1-flickeringInfluence)+flickeringMitigation); // in [(1-flickeringInfluence), 1]
         adaptRatio = Math.min(adaptRatio, (1+flickeringInfluence)-flickeringMitigation); // in [1, (1+flickeringInfluence)]
         //end: handle excessive change;
         
-        adaptedWeight = treemapPoint.weight*adaptRatio;
+        adaptedWeight = mapPoint.weight*adaptRatio;
         adaptedWeight = Math.max(adaptedWeight, epsilon);
         
-        treemapPoint.weight = adaptedWeight;
+        mapPoint.weight = adaptedWeight;
         
-        newTreemapPoints.push(treemapPoint);
+        newMapPoints.push(mapPoint);
       }
       
-      handleOverweighted(newTreemapPoints);
+      handleOverweighted(newMapPoints);
     };
     
     // heuristics: lower heavy weights
-    function handleOverweighted0(treemapPoints) {
+    function handleOverweighted0(mapPoints) {
       var fixCount = 0;
       var fixApplied, tpi, tpj, weightest, lightest, sqrD, adaptedWeight;
       do {
         fixApplied = false;
         for(var i=0; i<siteCount; i++) {
-          tpi = treemapPoints[i];
+          tpi = mapPoints[i];
           for(var j=i+1; j<siteCount; j++) {
-            tpj = treemapPoints[j];
+            tpj = mapPoints[j];
             if (tpi.weight > tpj.weight) {
               weightest = tpi;
               lightest = tpj;
@@ -376,15 +376,15 @@
     }
     
     // heuristics: increase light weights
-    function handleOverweighted1(treemapPoints) {
+    function handleOverweighted1(mapPoints) {
       var fixCount = 0;
       var fixApplied, tpi, tpj, weightest, lightest, sqrD, overweight;
       do {
         fixApplied = false;
         for(var i=0; i<siteCount; i++) {
-          tpi = treemapPoints[i];
+          tpi = mapPoints[i];
           for(var j=i+1; j<siteCount; j++) {
-            tpj = treemapPoints[j];
+            tpj = mapPoints[j];
             if (tpi.weight > tpj.weight) {
               weightest = tpi;
               lightest = tpj;
@@ -413,12 +413,12 @@
     function computeAreaError(polygons) {
       //convergence based on summation of all sites current areas
       var areaErrorSum = 0;
-      var polygon, treemapPoint, currentArea;
+      var polygon, mapPoint, currentArea;
       for(var i=0; i<siteCount; i++) {
         polygon = polygons[i];
-        treemapPoint = polygon.site.originalObject;
+        mapPoint = polygon.site.originalObject;
         currentArea = d3Polygon.polygonArea(polygon);
-        areaErrorSum += Math.abs(treemapPoint.targetedArea-currentArea);;
+        areaErrorSum += Math.abs(mapPoint.targetedArea-currentArea);;
       }
       return areaErrorSum;
     };
@@ -439,7 +439,7 @@
     function initialize(data) {
       var maxWeight = data.reduce(function(max, d){ return Math.max(max, weight(d)); }, -Infinity),
           minAllowedWeight = maxWeight*minWeightRatio
-      var weights, treemapPoints;
+      var weights, mapPoints;
       
       //begin: extract weights
       weights = data.map(function(d, i){
@@ -451,13 +451,13 @@
       });
       //end: extract weights
       
-      // create treemap-related points
+      // create map-related points
       // (with targetedArea, and initial placement)
-      treemapPoints = createTreemapPoints(weights);
-      return wVoronoi(treemapPoints);
+      mapPoints = createMapPoints(weights);
+      return wVoronoi(mapPoints);
     };
     
-    function createTreemapPoints(basePoints) {
+    function createMapPoints(basePoints) {
       var totalWeight = basePoints.reduce(function(acc, bp){ return acc+=bp.weight; }, 0),
           avgWeight = totalWeight/siteCount,
           avgArea = totalArea/siteCount,

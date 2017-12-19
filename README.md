@@ -1,4 +1,4 @@
-# [WIP] d3-voronoi-map
+# d3-voronoi-map
 This D3 plugin produces a *Voronoï map* (i.e. one-level treemap). Given a convex polygon and weighted data, it tesselates/partitions the polygon in several inner cells, such that the area of a cell represents the weight of the underlying datum.
 
 Because a picture is worth a thousand words:
@@ -11,8 +11,7 @@ Because a picture is worth a thousand words:
 Available only for **d3 v4**.
 
 ## Restrictions
-This is a *WIP*. Hence, current limitations are:
-* quirky way to see/display intermediate computations (as in [Voronoï playground: Voronoï treemap (study 2)](http://bl.ocks.org/Kcnarf/2df494f34292f24964785a25d10e69c4)); better way is to propose a simulation (cf. [d3-force's simulation](https://github.com/d3/d3-force/blob/master/src/simulation.js))
+* quirky way to see/display intermediate computations (as in [Voronoï playground: Voronoï map (study 2)](http://bl.ocks.org/Kcnarf/2df494f34292f24964785a25d10e69c4)); better way would be to propose a simulation (cf. [d3-force's simulation](https://github.com/d3/d3-force/blob/master/src/simulation.js))
 
 ## Context
 D3 already provides a [d3-treemap](https://github.com/d3/d3-hierarchy/blob/master/README.md#treemap) module which produces a rectangular treemap. Such treemaps could be distorted to fit shapes that are not rectangles (cf. [Distorded Treemap - d3-shaped treemap](http://bl.ocks.org/Kcnarf/976b2e854965eea17a7754517043b91f)).
