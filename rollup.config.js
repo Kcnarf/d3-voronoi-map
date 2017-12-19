@@ -10,5 +10,5 @@ export default {
   globals: globals,
   external: Object.keys(globals),
   format: 'umd',
-  dest: 'build/d3-voronoi-treemap.js'
+  dest: 'build/d3-voronoi-map.js'
 };

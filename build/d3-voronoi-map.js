@@ -137,7 +137,7 @@
     return ratio;
   };
 
-  function voronoiTreemap () {
+  function voronoiMap () {
     
     //begin: constants
     var DEFAULT_CONVERGENCE_RATIO = 0.01;
@@ -178,7 +178,7 @@
     ///////// API /////////
     ///////////////////////
 
-    function _voronoiTreemap (data) {
+    function _voronoiMap (data) {
       //begin: handle algorithm's variants
       setHandleOverweighted();
       //end: handle algorithm's variants
@@ -212,46 +212,46 @@
       };
     };
 
-    _voronoiTreemap.weight = function (_) {
+    _voronoiMap.weight = function (_) {
       if (!arguments.length) { return weight; }
       
       weight = _;
-      return _voronoiTreemap;
+      return _voronoiMap;
     };
     
-    _voronoiTreemap.convergenceRatio = function (_) {
+    _voronoiMap.convergenceRatio = function (_) {
       if (!arguments.length) { return convergenceRatio; }
       
       convergenceRatio = _;
-      return _voronoiTreemap;
+      return _voronoiMap;
     };
     
-    _voronoiTreemap.maxIterationCount = function (_) {
+    _voronoiMap.maxIterationCount = function (_) {
       if (!arguments.length) { return maxIterationCount; }
       
       maxIterationCount = _;
-      return _voronoiTreemap;
+      return _voronoiMap;
     };
     
-    _voronoiTreemap.minWeightRatio = function (_) {
+    _voronoiMap.minWeightRatio = function (_) {
       if (!arguments.length) { return minWeightRatio; }
       
       minWeightRatio = _;
-      return _voronoiTreemap;
+      return _voronoiMap;
     };
 
-    _voronoiTreemap.tick = function (_) {
+    _voronoiMap.tick = function (_) {
       if (!arguments.length) { return tick; }
       
       tick = _;
-      return _voronoiTreemap;
+      return _voronoiMap;
     };
 
-    _voronoiTreemap.clip = function (_) {
+    _voronoiMap.clip = function (_) {
       if (!arguments.length) { return wVoronoi.clip(); }
       wVoronoi.clip(_);
 
-      return _voronoiTreemap;
+      return _voronoiMap;
     };
 
     ///////////////////////
@@ -488,10 +488,10 @@
       })
     };
 
-    return _voronoiTreemap;
+    return _voronoiMap;
   }
 
-  exports.voronoiTreemap = voronoiTreemap;
+  exports.voronoiMap = voronoiMap;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 

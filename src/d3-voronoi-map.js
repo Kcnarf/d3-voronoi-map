@@ -3,7 +3,7 @@ import {polygonHull, polygonCentroid, polygonArea, polygonContains} from 'd3-pol
 import {weightedVoronoi} from 'd3-weighted-voronoi';
 import {FlickeringMitigation} from './flickering-mitigation';
 
-export function voronoiTreemap () {
+export function voronoiMap () {
   
   //begin: constants
   var DEFAULT_CONVERGENCE_RATIO = 0.01;
@@ -44,7 +44,7 @@ export function voronoiTreemap () {
   ///////// API /////////
   ///////////////////////
 
-  function _voronoiTreemap (data) {
+  function _voronoiMap (data) {
     //begin: handle algorithm's variants
     setHandleOverweighted();
     //end: handle algorithm's variants
@@ -78,46 +78,46 @@ export function voronoiTreemap () {
     };
   };
 
-  _voronoiTreemap.weight = function (_) {
+  _voronoiMap.weight = function (_) {
     if (!arguments.length) { return weight; }
     
     weight = _;
-    return _voronoiTreemap;
+    return _voronoiMap;
   };
   
-  _voronoiTreemap.convergenceRatio = function (_) {
+  _voronoiMap.convergenceRatio = function (_) {
     if (!arguments.length) { return convergenceRatio; }
     
     convergenceRatio = _;
-    return _voronoiTreemap;
+    return _voronoiMap;
   };
   
-  _voronoiTreemap.maxIterationCount = function (_) {
+  _voronoiMap.maxIterationCount = function (_) {
     if (!arguments.length) { return maxIterationCount; }
     
     maxIterationCount = _;
-    return _voronoiTreemap;
+    return _voronoiMap;
   };
   
-  _voronoiTreemap.minWeightRatio = function (_) {
+  _voronoiMap.minWeightRatio = function (_) {
     if (!arguments.length) { return minWeightRatio; }
     
     minWeightRatio = _;
-    return _voronoiTreemap;
+    return _voronoiMap;
   };
 
-  _voronoiTreemap.tick = function (_) {
+  _voronoiMap.tick = function (_) {
     if (!arguments.length) { return tick; }
     
     tick = _;
-    return _voronoiTreemap;
+    return _voronoiMap;
   };
 
-  _voronoiTreemap.clip = function (_) {
+  _voronoiMap.clip = function (_) {
     if (!arguments.length) { return wVoronoi.clip(); }
     wVoronoi.clip(_);
 
-    return _voronoiTreemap;
+    return _voronoiMap;
   };
 
   ///////////////////////
@@ -354,5 +354,5 @@ export function voronoiTreemap () {
     })
   };
 
-  return _voronoiTreemap;
+  return _voronoiMap;
 }

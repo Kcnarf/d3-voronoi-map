@@ -1,1 +1,1 @@
-export {voronoiTreemap} from "./src/d3-voronoi-treemap";
+export {voronoiMap} from "./src/d3-voronoi-map";

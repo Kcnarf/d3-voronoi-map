@@ -1,5 +1,5 @@
-# [WIP] d3-voronoi-treemap
-This D3 plugin produces a *Voronoï treemap*. Given a convex polygon and weighted data, it tesselates/partitions the polygon in several inner cells, such that the area of a cell represents the weight of the underlying datum.
+# [WIP] d3-voronoi-map
+This D3 plugin produces a *Voronoï map* (i.e. one-level treemap). Given a convex polygon and weighted data, it tesselates/partitions the polygon in several inner cells, such that the area of a cell represents the weight of the underlying datum.
 
 Because a picture is worth a thousand words:
 
@@ -12,38 +12,37 @@ Available only for **d3 v4**.
 
 ## Restrictions
 This is a *WIP*. Hence, current limitations are:
-* produces only first-level treemap; nested data are not handled (yet ;-)
 * quirky way to see/display intermediate computations (as in [Voronoï playground: Voronoï treemap (study 2)](http://bl.ocks.org/Kcnarf/2df494f34292f24964785a25d10e69c4)); better way is to propose a simulation (cf. [d3-force's simulation](https://github.com/d3/d3-force/blob/master/src/simulation.js))
 
 ## Context
 D3 already provides a [d3-treemap](https://github.com/d3/d3-hierarchy/blob/master/README.md#treemap) module which produces a rectangular treemap. Such treemaps could be distorted to fit shapes that are not rectangles (cf. [Distorded Treemap - d3-shaped treemap](http://bl.ocks.org/Kcnarf/976b2e854965eea17a7754517043b91f)).
 
-This plugin allows to compute a treemap with a unique look-and-feel, where inner areas are not strictly aligned each others, and where the outer shape can be any hole-free convex polygons (squares, rectangles, pentagon, hexagon, ... any regular convex polygon, and also any non regular hole-free convex polygon).
+This plugin allows to compute a map with a unique look-and-feel, where inner areas are not strictly aligned each others, and where the outer shape can be any hole-free convex polygons (squares, rectangles, pentagon, hexagon, ... any regular convex polygon, and also any non regular hole-free convex polygon).
 
-The drawback is that the computation of a Voronoï treemap is based on a iteration/looping process. Hence, it requires *some times*, depending on the number and type of data/weights, the desired representativeness of cell areas.
+The drawback is that the computation of a Voronoï map is based on a iteration/looping process. Hence, it requires *some times*, depending on the number and type of data/weights, the desired representativeness of cell areas.
 
 ## Examples
 * [The Individual Costs of Being Obese in the U.S. (2010)](https://bl.ocks.org/kcnarf/238fa136f763f5ad908271a170ef60e2), a remake of [HowMuch.net's post](https://howmuch.net/articles/obesity-costs-visualized)
 
 ## Installing
-Load ```https://rawgit.com/Kcnarf/d3-voronoi-treemap/master/build/d3-voronoi-treemap.js``` (or its ```d3-voronoi-treemap.min.js``` version) to make it available in AMD, CommonJS, or vanilla environments. In vanilla, you must load the [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi) plugin prioir to this one, and a d3 global is exported:
+Load ```https://rawgit.com/Kcnarf/d3-voronoi-map/master/build/d3-voronoi-map.js``` (or its ```d3-voronoi-map.min.js``` version) to make it available in AMD, CommonJS, or vanilla environments. In vanilla, you must load the [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi) plugin prioir to this one, and a d3 global is exported:
 ```html
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://raw.githack.com/Kcnarf/d3-weighted-voronoi/master/build/d3-weighted-voronoi.js"></script>
-<script src="https://raw.githack.com/Kcnarf/d3-voronoi-treemap/master/build/d3-voronoi-treemap.js"></script>
+<script src="https://raw.githack.com/Kcnarf/d3-voronoi-map/master/build/d3-voronoi-map.js"></script>
 <script>
-  var voronoiTreemap = d3.voronoiTreemap();
+  var voronoiMap = d3.voronoiMap();
 </script>
 ```
 
 ## TL;DR;
 In your javascript, in order to define the tessellation:
 ```javascript
-var voronoiTreemap = d3.voronoiTreemap()
+var voronoiMap = d3.voronoiMap()
   .weight(function(d){ return weightScale(d); }         // set the weight accessor
   .clip([0,0], [0,height], [width, height], [width,0])  // set the clipping polygon
 
-var res = voronoiTreemap(data);                         // compute the weighted Voronoi tessellation; returns {polygons, iterationCount, convergenceRatio}
+var res = voronoiMap(data);                         // compute the weighted Voronoi tessellation; returns {polygons, iterationCount, convergenceRatio}
 var cells = res.polygons
   
 ```
@@ -63,17 +62,17 @@ d3.selectAll('path')
 * [https://github.com/ArlindNocaj/power-voronoi-diagram](https://github.com/ArlindNocaj/power-voronoi-diagram) for a Java implementation
 
 ## API
-<a name="voronoiTreemap" href="#voronoiTreemap">#</a> d3.<b>voronoiTreemap</b>()
+<a name="voronoiMap" href="#voronoiMap">#</a> d3.<b>voronoiMap</b>()
 
-Creates a new voronoiTreemap with the default [*weight*](#voronoiTreemap_weight) accessor, and default [*clip*](#voronoiTreemap_clip), [*convergenceRatio*](#voronoiTreemap_convergenceRatio), [*maxIterationCount*](#voronoiTreemap_maxIterationCount) and [*minWeightRatio*](#voronoiTreemap_minWeightRatio) configuration values.
+Creates a new voronoiMap with the default [*weight*](#voronoiMap_weight) accessor, and default [*clip*](#voronoiMap_clip), [*convergenceRatio*](#voronoiMap_convergenceRatio), [*maxIterationCount*](#voronoiMap_maxIterationCount) and [*minWeightRatio*](#voronoiMap_minWeightRatio) configuration values.
 
-<a name="_voronoiTreemap" href="#_voronoiTreemap">#</a> <i>voronoiTreemap</i>(<i>data</i>)
+<a name="_voronoiMap" href="#_voronoiMap">#</a> <i>voronoiMap</i>(<i>data</i>)
 
-Computes the **Voronoï treemap** for the specified *data* weights.
+Computes the **Voronoï map** for the specified *data* weights.
 
-Returns a *hash* where *hash.polygons* is a sparse array of polygons clipped to the [*clip*](#voronoiTreemap_clip)-ping polygon, one for each cell (each unique input point) in the diagram. Each polygon is represented as an array of points \[*x*, *y*\] where *x* and *y* are the point coordinates, a *site* field that refers to its site (ie. with x, y and weight retrieved from the original data), and a *site.originalObject* field that refers to the corresponding element in *data*. Polygons are open: they do not contain a closing point that duplicates the first point; a triangle, for example, is an array of three points. Polygons are also counterclockwise (assuming the origin ⟨0,0⟩ is in the top-left corner). Furthermore, *hash.iterationCount* is the number of iterations required to compute the resulting treempp, and *hash.convergenceRatio* is the final convergence ratio (ie. cell area errors / area of the [*clip*](#voronoiTreemap_clip)-ping polygon).
+Returns a *hash* where *hash.polygons* is a sparse array of polygons clipped to the [*clip*](#voronoiMap_clip)-ping polygon, one for each cell (each unique input point) in the diagram. Each polygon is represented as an array of points \[*x*, *y*\] where *x* and *y* are the point coordinates, a *site* field that refers to its site (ie. with x, y and weight retrieved from the original data), and a *site.originalObject* field that refers to the corresponding element in *data*. Polygons are open: they do not contain a closing point that duplicates the first point; a triangle, for example, is an array of three points. Polygons are also counterclockwise (assuming the origin ⟨0,0⟩ is in the top-left corner). Furthermore, *hash.iterationCount* is the number of iterations required to compute the resulting map, and *hash.convergenceRatio* is the final convergence ratio (ie. cell area errors / area of the [*clip*](#voronoiMap_clip)-ping polygon).
 
-<a name="voronoiTreemap_weight" href="#voronoiTreemap_weight">#</a> <i>voronoiTreemap</i>.<b>weight</b>([<i>weight</i>])
+<a name="voronoiMap_weight" href="#voronoiMap_weight">#</a> <i>voronoiMap</i>.<b>weight</b>([<i>weight</i>])
 
 If *weight*-accessor is specified, sets the *weight* accessor. If *weight* is not specified, returns the current *weight* accessor, which defaults to:
 
@@ -83,7 +82,7 @@ function weight(d) {
 }
 ```
 
-<a name="voronoiTreemap_clip" href="#voronoiTreemap_clip">#</a> <i>voronoiTreemap</i>.<b>clip</b>([<i>clip</i>])
+<a name="voronoiMap_clip" href="#voronoiMap_clip">#</a> <i>voronoiMap</i>.<b>clip</b>([<i>clip</i>])
 
 If *clip* is specified, sets the clipping polygon. *clip* defines a hole-free convex polygon, and is specified as an array of 2D points \[x, y\], which must be *(i)* open (no duplication of the first D2 point) and *(ii)* counterclockwise (assuming the origin ⟨0,0⟩ is in the top-left corner). If *clip* is not specified, returns the current clipping polygon, which defaults to:
 
@@ -91,27 +90,27 @@ If *clip* is specified, sets the clipping polygon. *clip* defines a hole-free co
 [[0,0], [0,1], [1,1], [1,0]]
 ```
 
-<a name="voronoiTreemap_convergenceRatio" href="#voronoiTreemap_convergenceRatio">#</a> <i>voronoiTreemap</i>.<b>convergenceRatio</b>([<i>convergenceRatio</i>])
+<a name="voronoiMap_convergenceRatio" href="#voronoiMap_convergenceRatio">#</a> <i>voronoiMap</i>.<b>convergenceRatio</b>([<i>convergenceRatio</i>])
 
-If *convergenceRatio* is specified, sets the convergence ratio, which stops computation when (cell area errors / ([*clip*](#voronoiTreemap_clip)-ping polygon area) <= *convergenceRatio*. If *convergenceRatio* is not specified, returns the current *convergenceRatio* , which defaults to:
+If *convergenceRatio* is specified, sets the convergence ratio, which stops computation when (cell area errors / ([*clip*](#voronoiMap_clip)-ping polygon area) <= *convergenceRatio*. If *convergenceRatio* is not specified, returns the current *convergenceRatio* , which defaults to:
 
 ```js
 var convergenceRation = 0.01  // stops computation when cell area error <= 1% clipping polygon's area
 ```
 
-The smaller the *convergenceRatio*, the more representative is the treemap, the longer the computation takes time. 
+The smaller the *convergenceRatio*, the more representative is the map, the longer the computation takes time. 
 
-<a name="voronoiTreemap_maxIterationCount" href="#voronoiTreemap_maxIterationCount">#</a> <i>voronoiTreemap</i>.<b>maxIterationCount</b>([<i>maxIterationCount</i>])
+<a name="voronoiMap_maxIterationCount" href="#voronoiMap_maxIterationCount">#</a> <i>voronoiMap</i>.<b>maxIterationCount</b>([<i>maxIterationCount</i>])
 
-If *maxIterationCount* is specified, sets the maximum allowed number of iterations, which stops computation when it is reached, even if the [*convergenceRatio*](#voronoiTreemap_convergenceRatio) is not reached. If *maxIterationCount* is not specified, returns the current *maxIterationCount* , which defaults to:
+If *maxIterationCount* is specified, sets the maximum allowed number of iterations, which stops computation when it is reached, even if the [*convergenceRatio*](#voronoiMap_convergenceRatio) is not reached. If *maxIterationCount* is not specified, returns the current *maxIterationCount* , which defaults to:
 
 ```js
 var maxIterationCount = 50;
 ```
 
-If you want to wait until computation stops _only_ when the [*convergenceRatio*](#voronoiTreemap_convergenceRatio) is reached, just set the *maxIterationCount* to a large amount. Be warned that computation may take a huge amount of time, due to flickering behaviours in later iterations.
+If you want to wait until computation stops _only_ when the [*convergenceRatio*](#voronoiMap_convergenceRatio) is reached, just set the *maxIterationCount* to a large amount. Be warned that computation may take a huge amount of time, due to flickering behaviours in later iterations.
 
-<a name="voronoiTreemap_minWeightRatio" href="#voronoiTreemap_minWeightRatio">#</a> <i>voronoiTreemap</i>.<b>minWeightRatio</b>([<i>minWeightRatio</i>])
+<a name="voronoiMap_minWeightRatio" href="#voronoiMap_minWeightRatio">#</a> <i>voronoiMap</i>.<b>minWeightRatio</b>([<i>minWeightRatio</i>])
 
 If *minWeightRatio* is specified, sets the minimum weight ratio, which allows to compute the minimum allowed weight (_= maxWeight * minWeightRatio_). If *minWeightRatio* is not specified, returns the current *minWeightRatio* , which defaults to:
 
@@ -130,7 +129,7 @@ var minWeightRatio = 0.01;  // 1% of maxWeight
 In order to test the code
 
 ```sh
-git clone https://github.com/Kcnarf/d3-voronoi-treemap.git
+git clone https://github.com/Kcnarf/d3-voronoi-map.git
 [...]
 yarn install
 [...]
