@@ -9,6 +9,7 @@ export function voronoiMap () {
   var DEFAULT_CONVERGENCE_RATIO = 0.01;
   var DEFAULT_MAX_ITERATION_COUNT = 50;
   var DEFAULT_MIN_WEIGHT_RATIO = 0.01;
+  var DEFAULT_INIT_PLACEMENT = randomPlacement;
   var epsilon = 1;
   //end: constants
   
@@ -17,6 +18,7 @@ export function voronoiMap () {
   var convergenceRatio = DEFAULT_CONVERGENCE_RATIO;     // targeted allowed error ratio; default 0.01 stops computation when cell areas error <= 1% clipping polygon's area
   var maxIterationCount = DEFAULT_MAX_ITERATION_COUNT;  // maximum allowed iteration; stops computation even if convergence is not reached; use a large amount for a sole converge-based computation stop
   var minWeightRatio = DEFAULT_MIN_WEIGHT_RATIO;        // used to compute the minimum allowed weight; default 0.01 means 1% of max weight; handle near-zero weights, and leaves enought space for cell hovering
+  var initPlacement = DEFAULT_INIT_PLACEMENT            // initial placement of sites; defaults to random
   var tick = function (polygons, i) { return true; }    // hook called at each iteration's end (i = iteration count)
   
   //begin: internals
@@ -117,6 +119,13 @@ export function voronoiMap () {
     if (!arguments.length) { return wVoronoi.clip(); }
     wVoronoi.clip(_);
 
+    return _voronoiMap;
+  };
+    
+  _voronoiMap.initPlacement = function (_) {
+    if (!arguments.length) { return initPlacement; }
+    
+    initPlacement = _;
     return _voronoiMap;
   };
 
@@ -312,6 +321,7 @@ export function voronoiMap () {
       return {
         index: i,
         weight: Math.max(weight(d), minAllowedWeight),
+        initPlacement: initPlacement(d, i, wVoronoi.clip()),
         originalData: d
       };
     });
@@ -327,31 +337,42 @@ export function voronoiMap () {
     var totalWeight = basePoints.reduce(function(acc, bp){ return acc+=bp.weight; }, 0),
         avgWeight = totalWeight/siteCount,
         avgArea = totalArea/siteCount,
-        xExtent = extent(wVoronoi.clip().map(function(p){return p[0];})),
-        yExtent = extent(wVoronoi.clip().map(function(p){return p[1];})),
-        dx = xExtent[1]-xExtent[0],
-        dy = yExtent[1]-yExtent[0],
         defaultWeight = avgArea/2;  // a magic heuristics!
         // defaultWeight = avgWeight;
-    var x,y;
+    var placement;
     
     return basePoints.map(function(bp) {
-      x = xExtent[0]+dx*Math.random();
-      y = yExtent[0]+dy*Math.random();
-      while (!polygonContains(wVoronoi.clip(), [x, y])) { 
-        x = xExtent[0]+dx*Math.random();
-        y = yExtent[0]+dy*Math.random();
+      placement = bp.initPlacement;
+        
+      if (!polygonContains(wVoronoi.clip(), placement)) {
+        placement = randomPlacement(bp, i, wVoronoi.clip());
       }
 
       return {
         index: bp.index,
         targetedArea: totalArea*bp.weight/totalWeight,
         data: bp,
-        x: x,
-        y: y,
+        x: placement[0],
+        y: placement[1],
         weight: defaultWeight
       }
     })
+  };
+
+  function randomPlacement(d, i, clippingPolygon) {
+    var xExtent = extent(clippingPolygon.map(function(p){return p[0];})),
+        yExtent = extent(clippingPolygon.map(function(p){return p[1];})),
+        dx = xExtent[1]-xExtent[0],
+        dy = yExtent[1]-yExtent[0];
+    var x,y;
+    
+    x = xExtent[0]+dx*Math.random();
+    y = yExtent[0]+dy*Math.random();
+    while (!polygonContains(clippingPolygon, [x, y])) { 
+      x = xExtent[0]+dx*Math.random();
+      y = yExtent[0]+dy*Math.random();
+    }
+    return [x, y];
   };
 
   return _voronoiMap;
