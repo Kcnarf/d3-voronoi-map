@@ -9,7 +9,7 @@ export function voronoiMap () {
   var DEFAULT_CONVERGENCE_RATIO = 0.01;
   var DEFAULT_MAX_ITERATION_COUNT = 50;
   var DEFAULT_MIN_WEIGHT_RATIO = 0.01;
-  var DEFAULT_INIT_PLACEMENT = randomPlacement;
+  var DEFAULT_INIT_PLACEMENT = randomInitPlacement;
   var epsilon = 1;
   //end: constants
   
@@ -18,7 +18,7 @@ export function voronoiMap () {
   var convergenceRatio = DEFAULT_CONVERGENCE_RATIO;     // targeted allowed error ratio; default 0.01 stops computation when cell areas error <= 1% clipping polygon's area
   var maxIterationCount = DEFAULT_MAX_ITERATION_COUNT;  // maximum allowed iteration; stops computation even if convergence is not reached; use a large amount for a sole converge-based computation stop
   var minWeightRatio = DEFAULT_MIN_WEIGHT_RATIO;        // used to compute the minimum allowed weight; default 0.01 means 1% of max weight; handle near-zero weights, and leaves enought space for cell hovering
-  var initPlacement = DEFAULT_INIT_PLACEMENT            // initial placement of sites; defaults to random
+  var initPlacement = DEFAULT_INIT_PLACEMENT            // initial placement strategy of sites; defaults to random
   var tick = function (polygons, i) { return true; }    // hook called at each iteration's end (i = iteration count)
   
   //begin: internals
@@ -69,7 +69,7 @@ export function voronoiMap () {
       areaError = computeAreaError(polygons);
       flickeringMitigation.add(areaError);
       converged = areaError < areaErrorTreshold;
-      console.log("error %: "+Math.round(areaError*100*1000/totalArea)/1000);
+      // console.log("error %: "+Math.round(areaError*100*1000/totalArea)/1000);
       tick(polygons, iterationCount);
     }
     
@@ -117,8 +117,8 @@ export function voronoiMap () {
 
   _voronoiMap.clip = function (_) {
     if (!arguments.length) { return wVoronoi.clip(); }
+    
     wVoronoi.clip(_);
-
     return _voronoiMap;
   };
     
@@ -245,9 +245,11 @@ export function voronoiMap () {
       }
     } while (fixApplied)
     
+    /*
     if (fixCount>0) {
       console.log("# fix: "+fixCount);
     }
+    */
   }
   
   // heuristics: increase light weights
@@ -280,9 +282,11 @@ export function voronoiMap () {
       }
     } while (fixApplied)
     
+    /*
     if (fixCount>0) {
       console.log("# fix: "+fixCount);
     }
+    */
   }
   
   function computeAreaError(polygons) {
@@ -321,7 +325,7 @@ export function voronoiMap () {
       return {
         index: i,
         weight: Math.max(weight(d), minAllowedWeight),
-        initPlacement: initPlacement(d, i, wVoronoi.clip()),
+        initPlacement: initPlacement(d, i, wVoronoi),
         originalData: d
       };
     });
@@ -341,11 +345,12 @@ export function voronoiMap () {
         // defaultWeight = avgWeight;
     var placement;
     
-    return basePoints.map(function(bp) {
+    return basePoints.map(function(bp, i) {
       placement = bp.initPlacement;
-        
+      
       if (!polygonContains(wVoronoi.clip(), placement)) {
-        placement = randomPlacement(bp, i, wVoronoi.clip());
+        console.log("1: "+weightedVoronoi);
+        placement = randomInitPlacement(bp, i, wVoronoi);
       }
 
       return {
@@ -359,18 +364,23 @@ export function voronoiMap () {
     })
   };
 
-  function randomPlacement(d, i, clippingPolygon) {
-    var xExtent = extent(clippingPolygon.map(function(p){return p[0];})),
-        yExtent = extent(clippingPolygon.map(function(p){return p[1];})),
-        dx = xExtent[1]-xExtent[0],
-        dy = yExtent[1]-yExtent[0];
+  function randomInitPlacement(d, i, weightedVoronoi) {
+    console.log("2: "+weightedVoronoi);
+    var clippingPolygon = weightedVoronoi.clip(),
+        extent = weightedVoronoi.extent(),
+        minX = extent[0][0],
+        maxX = extent[1][0],
+        minY = extent[0][1],
+        maxY = extent[1][1],
+        dx = maxX-minX,
+        dy = maxY-minY;
     var x,y;
     
-    x = xExtent[0]+dx*Math.random();
-    y = yExtent[0]+dy*Math.random();
+    x = minX+dx*Math.random();
+    y = minY+dy*Math.random();
     while (!polygonContains(clippingPolygon, [x, y])) { 
-      x = xExtent[0]+dx*Math.random();
-      y = yExtent[0]+dy*Math.random();
+      x = minX+dx*Math.random();
+      y = minY+dy*Math.random();
     }
     return [x, y];
   };
