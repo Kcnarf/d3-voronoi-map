@@ -1,7 +1,7 @@
 import {polygonCentroid as d3PolygonCentroid, polygonArea as d3PolygonArea, polygonContains as d3PolygonContains} from 'd3-polygon';
 import {weightedVoronoi as d3WeightedVoronoi} from 'd3-weighted-voronoi';
 import {FlickeringMitigation} from './flickering-mitigation';
-import {randomInitialPosition} from './random-initial-position';
+import randomInitialPosition from './random-initial-position';
 
 export function voronoiMap () {
   
@@ -361,26 +361,6 @@ export function voronoiMap () {
         weight: defaultWeight
       }
     })
-  };
-
-  function randomInitialPosition(d, i, arr, weightedVoronoi) {
-    var clippingPolygon = weightedVoronoi.clip(),
-        extent = weightedVoronoi.extent(),
-        minX = extent[0][0],
-        maxX = extent[1][0],
-        minY = extent[0][1],
-        maxY = extent[1][1],
-        dx = maxX-minX,
-        dy = maxY-minY;
-    var x,y;
-    
-    x = minX+dx*Math.random();
-    y = minY+dy*Math.random();
-    while (!d3PolygonContains(clippingPolygon, [x, y])) { 
-      x = minX+dx*Math.random();
-      y = minY+dy*Math.random();
-    }
-    return [x, y];
   };
 
   return _voronoiMap;
