@@ -65,7 +65,7 @@ d3.selectAll('path')
 ## API
 <a name="voronoiMap" href="#voronoiMap">#</a> d3.<b>voronoiMap</b>()
 
-Creates a new voronoiMap with the default [*weight*](#voronoiMap_weight) accessor, default [*clip*](#voronoiMap_clip), [*convergenceRatio*](#voronoiMap_convergenceRatio), [*maxIterationCount*](#voronoiMap_maxIterationCount) and [*minWeightRatio*](#voronoiMap_minWeightRatio) configuration values, and default [*initial placement*](#voronoiMap_initPlacement) strategy.
+Creates a new voronoiMap with the default [*weight*](#voronoiMap_weight) and [*initialPosition*](#voronoiMap_initialPosition) accessors, default [*clip*](#voronoiMap_clip), [*convergenceRatio*](#voronoiMap_convergenceRatio), [*maxIterationCount*](#voronoiMap_maxIterationCount) and [*minWeightRatio*](#voronoiMap_minWeightRatio) configuration values.
 
 <a name="_voronoiMap" href="#_voronoiMap">#</a> <i>voronoiMap</i>(<i>data</i>)
 
@@ -121,12 +121,12 @@ var minWeightRatio = 0.01;  // 1% of maxWeight
 
 *minWeightRatio* allows to mitigate flickerring behaviour (caused by too small weights), and enhances user interaction by not computing near-empty cells.
 
-<a name="voronoiMap_initPlacement" href="#voronoiMap_initPlacement">#</a> <i>voronoiMap</i>.<b>initPlacement</b>([<i>initPlacement</i>])
+<a name="voronoiMap_initialPosition" href="#voronoiMap_initialPosition">#</a> <i>voronoiMap</i>.<b>initialPosition</b>([<i>initialPosition</i>])
 
-If *initPlacement* is specified, sets the coordinate accessor that determines the initial placement of sites. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the underlying [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi) layout (which notably computes the initial diagram). The accessor must return an array of two numbers ```[x, y]```. If *initPlacement* is not specified, returns the current accessor, which defaults to a random position inside the clipping polygon: 
+If *initialPosition* is specified, sets the coordinate accessor that determines the initial position of sites. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the underlying [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi) layout (which notably computes the initial diagram). The accessor must provide an array of two numbers ```[x, y]``` inside the clipping polygon, otherwise a random initial position is used instead. If *initialPosition* is not specified, returns the current accessor, which defaults to a random position inside the clipping polygon: 
 
 ```js
-function randomInitPlacement(d, i, arr, weightedVoronoi) {
+function randomInitialPosition(d, i, arr, weightedVoronoi) {
   var clippingPolygon = weightedVoronoi.clip(),
       extent = weightedVoronoi.extent(),
       minX = extent[0][0], maxX = extent[1][0], minY = extent[0][1], maxY = extent[1][1],
@@ -146,14 +146,12 @@ function randomInitPlacement(d, i, arr, weightedVoronoi) {
 Above is a quite complex accessor that uses the [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi)'s API to ensure that sites are positioned inside the clipping polygon, but the accessor may be simpler (-:
 
 ```js
-function precomputedInitPlacement(d, i, arr, weightedVoronoi) {
+function precomputedInitialPosition(d, i, arr, weightedVoronoi) {
   return [d.precomputedX, d.precomputedY];
 };
 ```
 
-Note that if a site is positioned outside the clipping polygon, then the defautl random positioning is used instead.
-
-Considering the same set of data, severall Voronoï map computation lead to disctinct final arrangements, due to the default random initial positioning of sites. By setting  *initPlacement* with a callback producing repeatable results, then several computations produce the same final arrangement. This is useful if you want the same arrangement for distinct page loads/reloads.
+Considering the same set of data, severall Voronoï map computations lead to disctinct final arrangements, due to the default random initial position of sites. If *initialPosition* is a callback producing repeatable results, then several computations produce the same final arrangement. This is useful if you want the same arrangement for distinct page loads/reloads.
 
 ## Dependencies
  * d3-polygon.{polygonCentroid, polygonArea, polygonContains}

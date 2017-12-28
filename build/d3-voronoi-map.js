@@ -143,7 +143,7 @@
     var DEFAULT_CONVERGENCE_RATIO = 0.01;
     var DEFAULT_MAX_ITERATION_COUNT = 50;
     var DEFAULT_MIN_WEIGHT_RATIO = 0.01;
-    var DEFAULT_INIT_PLACEMENT = randomInitPlacement;
+    var DEFAULT_INITIAL_POSITION = randomInitialPosition;
     var epsilon = 1;
     //end: constants
     
@@ -152,7 +152,7 @@
     var convergenceRatio = DEFAULT_CONVERGENCE_RATIO;     // targeted allowed error ratio; default 0.01 stops computation when cell areas error <= 1% clipping polygon's area
     var maxIterationCount = DEFAULT_MAX_ITERATION_COUNT;  // maximum allowed iteration; stops computation even if convergence is not reached; use a large amount for a sole converge-based computation stop
     var minWeightRatio = DEFAULT_MIN_WEIGHT_RATIO;        // used to compute the minimum allowed weight; default 0.01 means 1% of max weight; handle near-zero weights, and leaves enought space for cell hovering
-    var initPlacement = DEFAULT_INIT_PLACEMENT            // initial placement strategy of sites; defaults to random
+    var initialPosition = DEFAULT_INITIAL_POSITION        // accessor to the initial position; defaults to a random position inside the clipping polygon
     var tick = function (polygons, i) { return true; }    // hook called at each iteration's end (i = iteration count)
     
     //begin: internals
@@ -256,10 +256,10 @@
       return _voronoiMap;
     };
       
-    _voronoiMap.initPlacement = function (_) {
-      if (!arguments.length) { return initPlacement; }
+    _voronoiMap.initialPosition = function (_) {
+      if (!arguments.length) { return initialPosition; }
       
-      initPlacement = _;
+      initialPosition = _;
       return _voronoiMap;
     };
 
@@ -270,7 +270,7 @@
     function adapt(polygons, flickeringMitigationRatio) {
       var adaptedMapPoints;
       
-      adaptPlacements(polygons, flickeringMitigationRatio);
+      adaptPositions(polygons, flickeringMitigationRatio);
       adaptedMapPoints = polygons.map(function(p) { return p.site.originalObject; });
       polygons = weightedVoronoi(adaptedMapPoints);
       if (polygons.length<siteCount) {
@@ -289,7 +289,7 @@
       return polygons;
     };
 
-    function adaptPlacements(polygons, flickeringMitigationRatio) {
+    function adaptPositions(polygons, flickeringMitigationRatio) {
       var newMapPoints = [],
           flickeringInfluence = 0.5;
       var flickeringMitigation, d, polygon, mapPoint, centroid, dx, dy;
@@ -459,14 +459,14 @@
         return {
           index: i,
           weight: Math.max(weight(d), minAllowedWeight),
-          initPlacement: initPlacement(d, i, arr, weightedVoronoi),
+          initialPosition: initialPosition(d, i, arr, weightedVoronoi),
           originalData: d
         };
       });
       //end: extract weights
       
       // create map-related points
-      // (with targetedArea, and initial placement)
+      // (with targetedArea, and initial position)
       mapPoints = createMapPoints(weights);
       return weightedVoronoi(mapPoints);
     };
@@ -477,27 +477,27 @@
           avgArea = totalArea/siteCount,
           defaultWeight = avgArea/2;  // a magic heuristics!
           // defaultWeight = avgWeight;
-      var placement;
+      var position;
       
       return basePoints.map(function(bp, i, bps) {
-        placement = bp.initPlacement;
+        position = bp.initialPosition;
         
-        if (!d3Polygon.polygonContains(weightedVoronoi.clip(), placement)) {
-          placement = randomInitPlacement(bp, i, bps, weightedVoronoi);
+        if (!d3Polygon.polygonContains(weightedVoronoi.clip(), position)) {
+          position = randomInitialPosition(bp, i, bps, weightedVoronoi);
         }
 
         return {
           index: bp.index,
           targetedArea: totalArea*bp.weight/totalWeight,
           data: bp,
-          x: placement[0],
-          y: placement[1],
+          x: position[0],
+          y: position[1],
           weight: defaultWeight
         }
       })
     };
 
-    function randomInitPlacement(d, i, arr, weightedVoronoi) {
+    function randomInitialPosition(d, i, arr, weightedVoronoi) {
       var clippingPolygon = weightedVoronoi.clip(),
           extent = weightedVoronoi.extent(),
           minX = extent[0][0],

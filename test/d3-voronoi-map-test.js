@@ -15,9 +15,11 @@ tape("voronoiMap(...) should set the expected defaults", function(test) {
 
 tape("voronoiMap.weight(...) should set the specified weight-accessor", function(test) {
   var voronoiMap = d3VoronoiMap.voronoiMap(),
-      datum = {weight: 1, weightPrime: 2};
+      datum = {weight: 1, weightPrime: 2},
+      newAccessor = function(d){ return d.weightPrime; };
 
-  test.equal(voronoiMap.weight(function(d){ return d.weightPrime; }), voronoiMap);
+  test.equal(voronoiMap.weight(newAccessor), voronoiMap);
+  test.equal(voronoiMap.weight(), newAccessor);
   test.equal(voronoiMap.weight()(datum), 2);
   test.end();
 });
@@ -55,22 +57,23 @@ tape("voronoiMap.minWeightRatio(...) should set the specified ratio", function(t
   test.end();
 });
 
-tape("voronoiMap.initPlacement(...)", function(test) {
-  test.test("voronoiMap.initPlacement(...) should set the specified initial placement strategy", function(test) {
+tape("voronoiMap.initialPosition(...)", function(test) {
+  test.test("voronoiMap.initialPosition(...) should set the specified callback", function(test) {
     var voronoiMap = d3VoronoiMap.voronoiMap();
     var datum = {weight: 1, xPos: 0.5, yPos: 0.5};
-    var newStrategy = function(d,i,clippingPolygon){ return [d.xPos, d.yPos]; };
+    var newAccessor = function(d,i,arr,clippingPolygon){ return [d.xPos, d.yPos]; };
 
-    test.equal(voronoiMap.initPlacement(newStrategy), voronoiMap);
-    test.deepEqual(voronoiMap.initPlacement()(datum), [0.5, 0.5]);
+    test.equal(voronoiMap.initialPosition(newAccessor), voronoiMap);
+    test.equal(voronoiMap.initialPosition(), newAccessor);
+    test.deepEqual(voronoiMap.initialPosition()(datum), [0.5, 0.5]);
     test.end();
   });
 
-  test.test("voronoiMap.initPlacement(...) should fallback to a random placement if specified strategy places sites outside the clipping polygon", function(test) {
+  test.test("voronoiMap.initialPosition(...) should fallback to a random position if specified callback retruns a position ouside the clipping polygon", function(test) {
     var voronoiMap = d3VoronoiMap.voronoiMap(),
         data = [{weight: 1, xPos: 2, yPos: 2}],
-        newStrategy = function(d,i,clippingPolygon){ return [d.xPos, d.yPos]; };
-        res = voronoiMap.maxIterationCount(0).initPlacement(newStrategy)(data),
+        newAccessor = function(d,i,arr,clippingPolygon){ return [d.xPos, d.yPos]; };
+        res = voronoiMap.maxIterationCount(0).initialPosition(newAccessor)(data),
         initX = res.polygons[0].site.originalObject.x,
         initY = res.polygons[0].site.originalObject.y;
 
@@ -78,6 +81,49 @@ tape("voronoiMap.initPlacement(...)", function(test) {
     test.ok(initX>0 && initX<1);
     test.notEqual(initY, 2);
     test.ok(initY>0 && initY<1);
+    test.end();
+  });
+
+  test.test("voronoiMap.initialPosition(...) should fallback to a random position if specified callback retruns unexpected results", function(test) {
+    var voronoiMap = d3VoronoiMap.voronoiMap(),
+        data = [{weight: 1, precomputedX: 2, precomputedY: 2}];
+    var newAccessor, res, initX, initY;
+     
+    newAccessor = function(d,i,arr,clippingPolygon){ return [d.precomputedX, NaN]; }; // NaN
+    res = voronoiMap.maxIterationCount(0).initialPosition(newAccessor)(data),
+    initX = res.polygons[0].site.originalObject.x,
+    initY = res.polygons[0].site.originalObject.y;
+    test.ok(initX>0 && initX<1);
+    test.ok(initY>0 && initY<1);
+
+    newAccessor = function(d,i,arr,clippingPolygon){ return [undefined, d.precomputedY]; }; // undefined
+    res = voronoiMap.maxIterationCount(0).initialPosition(newAccessor)(data),
+    initX = res.polygons[0].site.originalObject.x,
+    initY = res.polygons[0].site.originalObject.y;
+    test.ok(initX>0 && initX<1);
+    test.ok(initY>0 && initY<1);
+
+    newAccessor = function(d,i,arr,clippingPolygon){ return [d.precomputedX, null]; }; // null
+    res = voronoiMap.maxIterationCount(0).initialPosition(newAccessor)(data),
+    initX = res.polygons[0].site.originalObject.x,
+    initY = res.polygons[0].site.originalObject.y;
+    test.ok(initX>0 && initX<1);
+    test.ok(initY>0 && initY<1);
+
+    newAccessor = function(d,i,arr,clippingPolygon){ return ["foo", d.precomputedY] }; // not a number
+    res = voronoiMap.maxIterationCount(0).initialPosition(newAccessor)(data),
+    initX = res.polygons[0].site.originalObject.x,
+    initY = res.polygons[0].site.originalObject.y;
+    test.ok(initX>0 && initX<1);
+    test.ok(initY>0 && initY<1);
+
+    newAccessor = function(d,i,arr,clippingPolygon){ return d.precomputedY; }; // not an array
+    res = voronoiMap.maxIterationCount(0).initialPosition(newAccessor)(data),
+    initX = res.polygons[0].site.originalObject.x,
+    initY = res.polygons[0].site.originalObject.y;
+    test.ok(initX>0 && initX<1);
+    test.ok(initY>0 && initY<1);
+
     test.end();
   });
 });
