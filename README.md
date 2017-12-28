@@ -65,7 +65,7 @@ d3.selectAll('path')
 ## API
 <a name="voronoiMap" href="#voronoiMap">#</a> d3.<b>voronoiMap</b>()
 
-Creates a new voronoiMap with the default [*weight*](#voronoiMap_weight) and [*initialPosition*](#voronoiMap_initialPosition) accessors, default [*clip*](#voronoiMap_clip), [*convergenceRatio*](#voronoiMap_convergenceRatio), [*maxIterationCount*](#voronoiMap_maxIterationCount) and [*minWeightRatio*](#voronoiMap_minWeightRatio) configuration values.
+Creates a new voronoiMap with the default accessors and configuration values ([*weight*](#voronoiMap_weight), [*clip*](#voronoiMap_clip), [*convergenceRatio*](#voronoiMap_convergenceRatio), [*maxIterationCount*](#voronoiMap_maxIterationCount), [*minWeightRatio*](#voronoiMap_minWeightRatio), and [*initialPosition*](#voronoiMap_initialPosition)).
 
 <a name="_voronoiMap" href="#_voronoiMap">#</a> <i>voronoiMap</i>(<i>data</i>)
 

@@ -1,6 +1,7 @@
 import {polygonCentroid as d3PolygonCentroid, polygonArea as d3PolygonArea, polygonContains as d3PolygonContains} from 'd3-polygon';
 import {weightedVoronoi as d3WeightedVoronoi} from 'd3-weighted-voronoi';
 import {FlickeringMitigation} from './flickering-mitigation';
+import {randomInitialPosition} from './random-initial-position';
 
 export function voronoiMap () {
   
