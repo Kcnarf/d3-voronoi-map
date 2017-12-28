@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-array'), require('d3-polygon'), require('d3-weighted-voronoi')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'd3-array', 'd3-polygon', 'd3-weighted-voronoi'], factory) :
-  (factory((global.d3 = global.d3 || {}),global.d3,global.d3,global.d3));
-}(this, function (exports,d3Array,d3Polygon,d3WeightedVoronoi) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-polygon'), require('d3-weighted-voronoi')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'd3-polygon', 'd3-weighted-voronoi'], factory) :
+  (factory((global.d3 = global.d3 || {}),global.d3,global.d3));
+}(this, function (exports,d3Polygon,d3WeightedVoronoi) { 'use strict';
 
   function FlickeringMitigation () {
     /////// Inputs ///////
@@ -156,7 +156,7 @@
     var tick = function (polygons, i) { return true; }    // hook called at each iteration's end (i = iteration count)
     
     //begin: internals
-    var wVoronoi = d3WeightedVoronoi.weightedVoronoi();
+    var weightedVoronoi = d3WeightedVoronoi.weightedVoronoi();
     var siteCount,
         totalArea,
         areaErrorTreshold,
@@ -186,7 +186,7 @@
       //end: handle algorithm's variants
 
       siteCount = data.length;
-      totalArea = Math.abs(d3Polygon.polygonArea(wVoronoi.clip())),
+      totalArea = Math.abs(d3Polygon.polygonArea(weightedVoronoi.clip())),
       areaErrorTreshold = convergenceRatio*totalArea;
       flickeringMitigation.clear().totalArea(totalArea);
 
@@ -250,9 +250,9 @@
     };
 
     _voronoiMap.clip = function (_) {
-      if (!arguments.length) { return wVoronoi.clip(); }
+      if (!arguments.length) { return weightedVoronoi.clip(); }
       
-      wVoronoi.clip(_);
+      weightedVoronoi.clip(_);
       return _voronoiMap;
     };
       
@@ -272,7 +272,7 @@
       
       adaptPlacements(polygons, flickeringMitigationRatio);
       adaptedMapPoints = polygons.map(function(p) { return p.site.originalObject; });
-      polygons = wVoronoi(adaptedMapPoints);
+      polygons = weightedVoronoi(adaptedMapPoints);
       if (polygons.length<siteCount) {
         console.log("at least 1 site has no area, which is not supposed to arise");
         debugger;
@@ -280,7 +280,7 @@
       
       adaptWeights(polygons, flickeringMitigationRatio);
       adaptedMapPoints = polygons.map(function(p) { return p.site.originalObject; });
-      polygons = wVoronoi(adaptedMapPoints);
+      polygons = weightedVoronoi(adaptedMapPoints);
       if (polygons.length<siteCount) {
         console.log("at least 1 site has no area, which is not supposed to arise");
         debugger;
@@ -455,11 +455,11 @@
       var weights, mapPoints;
       
       //begin: extract weights
-      weights = data.map(function(d, i){
+      weights = data.map(function(d, i, arr){
         return {
           index: i,
           weight: Math.max(weight(d), minAllowedWeight),
-          initPlacement: initPlacement(d, i, wVoronoi),
+          initPlacement: initPlacement(d, i, arr, weightedVoronoi),
           originalData: d
         };
       });
@@ -468,7 +468,7 @@
       // create map-related points
       // (with targetedArea, and initial placement)
       mapPoints = createMapPoints(weights);
-      return wVoronoi(mapPoints);
+      return weightedVoronoi(mapPoints);
     };
     
     function createMapPoints(basePoints) {
@@ -479,12 +479,11 @@
           // defaultWeight = avgWeight;
       var placement;
       
-      return basePoints.map(function(bp, i) {
+      return basePoints.map(function(bp, i, bps) {
         placement = bp.initPlacement;
         
-        if (!d3Polygon.polygonContains(wVoronoi.clip(), placement)) {
-          console.log("1: "+d3WeightedVoronoi.weightedVoronoi);
-          placement = randomInitPlacement(bp, i, wVoronoi);
+        if (!d3Polygon.polygonContains(weightedVoronoi.clip(), placement)) {
+          placement = randomInitPlacement(bp, i, bps, weightedVoronoi);
         }
 
         return {
@@ -498,8 +497,7 @@
       })
     };
 
-    function randomInitPlacement(d, i, weightedVoronoi) {
-      console.log("2: "+weightedVoronoi);
+    function randomInitPlacement(d, i, arr, weightedVoronoi) {
       var clippingPolygon = weightedVoronoi.clip(),
           extent = weightedVoronoi.extent(),
           minX = extent[0][0],

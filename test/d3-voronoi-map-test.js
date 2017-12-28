@@ -84,12 +84,12 @@ tape("voronoiMap.initPlacement(...)", function(test) {
 
 tape("voronoiMap.(...) should compute Voronoï map", function(test) {
   test.test("basic use case", function(test) {
-    var voronoiMap = d3VoronoiMap.voronoiMap().maxIterationCount(2),
+    var voronoiMap = d3VoronoiMap.voronoiMap().maxIterationCount(1),
         data = [{weight: 1}, {weight: 1}],
         res = voronoiMap(data);
 
     test.equal(res.polygons.length, 2);
-    test.equal(res.iterationCount, 2);
+    test.equal(res.iterationCount, 1);
     test.ok(res.convergenceRatio);
     test.end();
   });
