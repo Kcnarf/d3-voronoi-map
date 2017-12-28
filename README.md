@@ -65,7 +65,7 @@ d3.selectAll('path')
 ## API
 <a name="voronoiMap" href="#voronoiMap">#</a> d3.<b>voronoiMap</b>()
 
-Creates a new voronoiMap with the default [*weight*](#voronoiMap_weight) accessor, and default [*clip*](#voronoiMap_clip), [*convergenceRatio*](#voronoiMap_convergenceRatio), [*maxIterationCount*](#voronoiMap_maxIterationCount) and [*minWeightRatio*](#voronoiMap_minWeightRatio) configuration values.
+Creates a new voronoiMap with the default [*weight*](#voronoiMap_weight) accessor, default [*clip*](#voronoiMap_clip), [*convergenceRatio*](#voronoiMap_convergenceRatio), [*maxIterationCount*](#voronoiMap_maxIterationCount) and [*minWeightRatio*](#voronoiMap_minWeightRatio) configuration values, and default [*initial placement*](#voronoiMap_initPlacement) strategy.
 
 <a name="_voronoiMap" href="#_voronoiMap">#</a> <i>voronoiMap</i>(<i>data</i>)
 
@@ -121,9 +121,42 @@ var minWeightRatio = 0.01;  // 1% of maxWeight
 
 *minWeightRatio* allows to mitigate flickerring behaviour (caused by too small weights), and enhances user interaction by not computing near-empty cells.
 
+<a name="voronoiMap_initPlacement" href="#voronoiMap_initPlacement">#</a> <i>voronoiMap</i>.<b>initPlacement</b>([<i>initPlacement</i>])
+
+If *initPlacement* is specified, sets the coordinate accessor that determines the initial placement of sites. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the underlying [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi) layout (which notably computes the initial diagram). The accessor must return an array of two numbers ```[x, y]```. If *initPlacement* is not specified, returns the current accessor, which defaults to a random position inside the clipping polygon: 
+
+```js
+function randomInitPlacement(d, i, arr, weightedVoronoi) {
+  var clippingPolygon = weightedVoronoi.clip(),
+      extent = weightedVoronoi.extent(),
+      minX = extent[0][0], maxX = extent[1][0], minY = extent[0][1], maxY = extent[1][1],
+      dx = maxX-minX, dy = maxY-minY;
+  var x,y;
+  
+  x = minX+dx*Math.random();
+  y = minY+dy*Math.random();
+  while (!polygonContains(clippingPolygon, [x, y])) { 
+    x = minX+dx*Math.random();
+    y = minY+dy*Math.random();
+  }
+  return [x, y];
+};
+```
+
+Above is a quite complex accessor that uses the [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi)'s API to ensure that sites are positioned inside the clipping polygon, but the accessor may be simpler (-:
+
+```js
+function precomputedInitPlacement(d, i, arr, weightedVoronoi) {
+  return [d.precomputedX, d.precomputedY];
+};
+```
+
+Note that if a site is positioned outside the clipping polygon, then the defautl random positioning is used instead.
+
+Considering the same set of data, severall Voronoï map computation lead to disctinct final arrangements, due to the default random initial positioning of sites. By setting  *initPlacement* with a callback producing repeatable results, then several computations produce the same final arrangement. This is useful if you want the same arrangement for distinct page loads/reloads.
+
 ## Dependencies
- * d3-array.extent
- * d3-polygon.{polygonHull, polygonCentroid, polygonArea, polygonContains}
+ * d3-polygon.{polygonCentroid, polygonArea, polygonContains}
  * d3-weighted-voronoi.weightedVoronoi
 
 ## Testing
