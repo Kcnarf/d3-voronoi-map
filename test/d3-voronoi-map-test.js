@@ -1,5 +1,5 @@
 var tape = require("tape"),
-    d3VoronoiMap = require('../build/d3-voronoi-map');
+    d3VoronoiMap = require("../build/d3-voronoi-map");
 
 tape("voronoiMap(...) should set the expected defaults", function(test) {
   var voronoiMap = d3VoronoiMap.voronoiMap(),
@@ -60,26 +60,26 @@ tape("voronoiMap.minWeightRatio(...) should set the specified ratio", function(t
 tape("voronoiMap.initialPosition(...)", function(test) {
   test.test("voronoiMap.initialPosition(...) should set the specified callback", function(test) {
     var voronoiMap = d3VoronoiMap.voronoiMap();
-    var datum = {weight: 1, xPos: 0.5, yPos: 0.5};
-    var newAccessor = function(d,i,arr,clippingPolygon){ return [d.xPos, d.yPos]; };
+    var datum = {weight: 1, precomputedX: 0.3, precomputedY: 0.7};
+    var newAccessor = function(d,i,arr,clippingPolygon){ return [d.precomputedX, d.precomputedY]; };
 
     test.equal(voronoiMap.initialPosition(newAccessor), voronoiMap);
     test.equal(voronoiMap.initialPosition(), newAccessor);
-    test.deepEqual(voronoiMap.initialPosition()(datum), [0.5, 0.5]);
+    test.deepEqual(voronoiMap.initialPosition()(datum), [0.3, 0.7]);
     test.end();
   });
 
   test.test("voronoiMap.initialPosition(...) should fallback to a random position if specified callback retruns a position ouside the clipping polygon", function(test) {
     var voronoiMap = d3VoronoiMap.voronoiMap(),
-        data = [{weight: 1, xPos: 2, yPos: 2}],
-        newAccessor = function(d,i,arr,clippingPolygon){ return [d.xPos, d.yPos]; };
+        data = [{weight: 1, precomputedX: 2, precomputedX: 3}],
+        newAccessor = function(d,i,arr,clippingPolygon){ return [d.precomputedX, d.precomputedY]; };
         res = voronoiMap.maxIterationCount(0).initialPosition(newAccessor)(data),
         initX = res.polygons[0].site.originalObject.x,
         initY = res.polygons[0].site.originalObject.y;
 
     test.notEqual(initX, 2);
     test.ok(initX>0 && initX<1);
-    test.notEqual(initY, 2);
+    test.notEqual(initY, 3);
     test.ok(initY>0 && initY<1);
     test.end();
   });

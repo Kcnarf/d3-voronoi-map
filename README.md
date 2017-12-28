@@ -65,7 +65,7 @@ d3.selectAll('path')
 ## API
 <a name="voronoiMap" href="#voronoiMap">#</a> d3.<b>voronoiMap</b>()
 
-Creates a new voronoiMap with the default accessors and configuration values ([*weight*](#voronoiMap_weight), [*clip*](#voronoiMap_clip), [*convergenceRatio*](#voronoiMap_convergenceRatio), [*maxIterationCount*](#voronoiMap_maxIterationCount), [*minWeightRatio*](#voronoiMap_minWeightRatio), and [*initialPosition*](#voronoiMap_initialPosition)).
+Creates a new voronoiMap with the default accessors and configuration values ([*weight*](#voronoiMap_weight), [*clip*](#voronoiMap_clip), [*convergenceRatio*](#voronoiMap_convergenceRatio), [*maxIterationCount*](#voronoiMap_maxIterationCount), [*minWeightRatio*](#voronoiMap_minWeightRatio), [*initialPosition*](#voronoiMap_initialPosition), and [*initialWeight*](#voronoiMap_initialWeight)).
 
 <a name="_voronoiMap" href="#_voronoiMap">#</a> <i>voronoiMap</i>(<i>data</i>)
 
@@ -123,7 +123,7 @@ var minWeightRatio = 0.01;  // 1% of maxWeight
 
 <a name="voronoiMap_initialPosition" href="#voronoiMap_initialPosition">#</a> <i>voronoiMap</i>.<b>initialPosition</b>([<i>initialPosition</i>])
 
-If *initialPosition* is specified, sets the coordinate accessor that determines the initial position of sites. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the underlying [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi) layout (which notably computes the initial diagram). The accessor must provide an array of two numbers ```[x, y]``` inside the clipping polygon, otherwise a random initial position is used instead. If *initialPosition* is not specified, returns the current accessor, which defaults to a random position inside the clipping polygon: 
+If *initialPosition* is specified, sets the initial coordinate accessor. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the underlying [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi) layout (which notably computes the initial diagram). The accessor must provide an array of two numbers ```[x, y]``` inside the clipping polygon, otherwise a random initial position is used instead. If *initialPosition* is not specified, returns the current accessor, which defaults to a random position inside the clipping polygon: 
 
 ```js
 function randomInitialPosition(d, i, arr, weightedVoronoi) {
@@ -152,6 +152,31 @@ function precomputedInitialPosition(d, i, arr, weightedVoronoi) {
 ```
 
 Considering the same set of data, severall Voronoï map computations lead to disctinct final arrangements, due to the default random initial position of sites. If *initialPosition* is a callback producing repeatable results, then several computations produce the same final arrangement. This is useful if you want the same arrangement for distinct page loads/reloads.
+
+<a name="voronoiMap_initialWeight" href="#voronoiMap_initialWeight">#</a> <i>voronoiMap</i>.<b>initialWeight</b>([<i>initialWeight</i>])
+
+If *initialWeight* is specified, sets the initial weight accessor. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the underlying [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi) layout (which notably computes the initial diagram). The accessor must provide apositive amount. If *initialWeight* is not specified, returns the current accessor, which defaults to initialize all sites with the same amount (which depends on the clipping polygon and the number of data):
+
+```js
+function halfAverageAreaInitialWeight(d, i, arr, weightedVoronoi) {
+  var siteCount = arr.length,
+      totalArea = d3PolygonArea(weightedVoronoi.clip());
+  
+  return totalArea/siteCount/2; // half of the average area of the the clipping polygon
+};
+```
+
+Above is a quite complex accessor that uses the [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi)'s API that the same weight for all sites, but the accessor may be simpler (-:
+
+```js
+function precomputedInitialWeight(d, i, arr, weightedVoronoi) {
+  return d.precomputedWeight;
+};
+```
+
+Considering a unique clipping polygon where you want to animate the same data but with slightly different weights (e.g., animated according to the time), this API combined with the [*initialPosition*](#voronoiMap_initialPosition) API allows you to maintain areas from 1 set to another:
+* first, compute the Voronoï map of a first set of data
+* then, compute the Voronoï map of another set of data, with initial positions and initial weights set to the final values of first Voronoï map
 
 ## Dependencies
  * d3-polygon.{polygonCentroid, polygonArea, polygonContains}

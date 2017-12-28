@@ -2,6 +2,7 @@ import {polygonCentroid as d3PolygonCentroid, polygonArea as d3PolygonArea, poly
 import {weightedVoronoi as d3WeightedVoronoi} from 'd3-weighted-voronoi';
 import {FlickeringMitigation} from './flickering-mitigation';
 import randomInitialPosition from './random-initial-position';
+import halfAverageAreaInitialWeight from './half-average-area-initial-weight';
 
 export function voronoiMap () {
   
@@ -10,6 +11,7 @@ export function voronoiMap () {
   var DEFAULT_MAX_ITERATION_COUNT = 50;
   var DEFAULT_MIN_WEIGHT_RATIO = 0.01;
   var DEFAULT_INITIAL_POSITION = randomInitialPosition;
+  var DEFAULT_INITIAL_WEIGHT = halfAverageAreaInitialWeight;
   var epsilon = 1;
   //end: constants
   
@@ -19,6 +21,7 @@ export function voronoiMap () {
   var maxIterationCount = DEFAULT_MAX_ITERATION_COUNT;  // maximum allowed iteration; stops computation even if convergence is not reached; use a large amount for a sole converge-based computation stop
   var minWeightRatio = DEFAULT_MIN_WEIGHT_RATIO;        // used to compute the minimum allowed weight; default 0.01 means 1% of max weight; handle near-zero weights, and leaves enought space for cell hovering
   var initialPosition = DEFAULT_INITIAL_POSITION        // accessor to the initial position; defaults to a random position inside the clipping polygon
+  var initialWeight = DEFAULT_INITIAL_WEIGHT            // accessor to the initial weight; defaults to the average area of the clipping polygon
   var tick = function (polygons, i) { return true; }    // hook called at each iteration's end (i = iteration count)
   
   //begin: internals
@@ -126,6 +129,13 @@ export function voronoiMap () {
     if (!arguments.length) { return initialPosition; }
     
     initialPosition = _;
+    return _voronoiMap;
+  };
+    
+  _voronoiMap.initialWeight = function (_) {
+    if (!arguments.length) { return initialWeight; }
+    
+    initialWeight = _;
     return _voronoiMap;
   };
 
@@ -326,39 +336,36 @@ export function voronoiMap () {
         index: i,
         weight: Math.max(weight(d), minAllowedWeight),
         initialPosition: initialPosition(d, i, arr, weightedVoronoi),
+        initialWeight: initialWeight(d, i, arr, weightedVoronoi),
         originalData: d
       };
     });
     //end: extract weights
     
     // create map-related points
-    // (with targetedArea, and initial position)
+    // (with targetedArea, initial position and initialWeight)
     mapPoints = createMapPoints(weights);
     return weightedVoronoi(mapPoints);
   };
   
   function createMapPoints(basePoints) {
-    var totalWeight = basePoints.reduce(function(acc, bp){ return acc+=bp.weight; }, 0),
-        avgWeight = totalWeight/siteCount,
-        avgArea = totalArea/siteCount,
-        defaultWeight = avgArea/2;  // a magic heuristics!
-        // defaultWeight = avgWeight;
+    var totalWeight = basePoints.reduce(function(acc, bp){ return acc+=bp.weight; }, 0);
     var position;
     
     return basePoints.map(function(bp, i, bps) {
-      position = bp.initialPosition;
+      initialPosition = bp.initialPosition;
       
-      if (!d3PolygonContains(weightedVoronoi.clip(), position)) {
-        position = randomInitialPosition(bp, i, bps, weightedVoronoi);
+      if (!d3PolygonContains(weightedVoronoi.clip(), initialPosition)) {
+        initialPosition = randomInitialPosition(bp, i, bps, weightedVoronoi);
       }
 
       return {
         index: bp.index,
         targetedArea: totalArea*bp.weight/totalWeight,
         data: bp,
-        x: position[0],
-        y: position[1],
-        weight: defaultWeight
+        x: initialPosition[0],
+        y: initialPosition[1],
+        weight: bp.initialWeight  // ArlindNocaj/Voronoi-Treemap-Library uses an epsilonesque initial weight; using heavier initial weights allows faster weight adjustements, hane faster stabilization
       }
     })
   };
