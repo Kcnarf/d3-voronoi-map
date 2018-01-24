@@ -174,9 +174,9 @@ function precomputedInitialWeight(d, i, arr, weightedVoronoi) {
 };
 ```
 
-Considering a unique clipping polygon where you want to animate the same data but with slightly different weights (e.g., animate according to the time), this API combined with the [*initialPosition*](#voronoiMap_initialPosition) API allows you to maintain areas from 1 set to another:
+Considering a unique clipping polygon where you want to animate the same data but with slightly different weights (e.g., animate according to the time), this API combined with the [*initialPosition*](#voronoiMap_initialPosition) API allows you to maintain areas from one set to another:
 * first, compute the Voronoï map of a first set of data
-* then, compute the Voronoï map of another set of data, where sites are initialized (positions and weights) to the final values of first Voronoï map
+* then, compute the Voronoï map of another set of data, by initilizing sites to the final values (positions and weights) of first Voronoï map
 
 ## Dependencies
  * d3-polygon.{polygonCentroid, polygonArea, polygonContains}
