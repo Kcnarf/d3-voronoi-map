@@ -9,7 +9,7 @@ Because a picture is worth a thousand words:
 ![diamond](./img/diamond.png)
 ![circle](./img/circle.png)
 
-Available only for **d3 v4**.
+Available for **d3 v4** and **d3 v5**.
 
 If you're interested on multi-level treemap, which handle nested/hierarchical data, take a look at the [d3-voronoi-treemap](https://github.com/Kcnarf/d3-voronoi-treemap) plugin.
 
@@ -27,11 +27,11 @@ The drawback is that the computation of a Voronoï map is based on a iteration/l
 
 ## Examples
 
-* [The Individual Costs of Being Obese in the U.S. (2010)](https://bl.ocks.org/kcnarf/238fa136f763f5ad908271a170ef60e2), a remake of [HowMuch.net's post](https://howmuch.net/articles/obesity-costs-visualized)
+* [The Individual Costs of Being Obese in the U.S. (2010)](https://bl.ocks.org/kcnarf/e649c8723eff3fd64a23f75901910930), a remake of [HowMuch.net's post](https://howmuch.net/articles/obesity-costs-visualized)
 
 ## Installing
 
-Load `https://rawgit.com/Kcnarf/d3-voronoi-map/master/build/d3-voronoi-map.js` (or its `d3-voronoi-map.min.js` version) to make it available in AMD, CommonJS, or vanilla environments. In vanilla, you must load the [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi) plugin prioir to this one, and a d3 global is exported:
+Load `https://rawgit.com/Kcnarf/d3-voronoi-map/master/build/d3-voronoi-map.js` (or its `d3-voronoi-map.min.js` version) to make it available in AMD, CommonJS, or vanilla environments. In vanilla, you must load the [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi) plugin prior to this one, and a d3 global is exported:
 
 ```html
 <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -53,7 +53,6 @@ var voronoiMap = d3.voronoiMap()
 
 var res = voronoiMap(data);                         // compute the weighted Voronoi tessellation; returns {polygons, iterationCount, convergenceRatio}
 var cells = res.polygons
-
 ```
 
 Then, later in your javascript, in order to draw cells:
