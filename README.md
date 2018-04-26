@@ -49,7 +49,7 @@ In your javascript, in order to define the tessellation:
 ```javascript
 var voronoiMap = d3.voronoiMap()
   .weight(function(d){ return weightScale(d); }         // set the weight accessor
-  .clip([0,0], [0,height], [width, height], [width,0])  // set the clipping polygon
+  .clip([[0,0], [0,height], [width, height], [width,0]])  // set the clipping polygon
 
 var res = voronoiMap(data);                         // compute the weighted Voronoi tessellation; returns {polygons, iterationCount, convergenceRatio}
 var cells = res.polygons
