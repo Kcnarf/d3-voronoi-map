@@ -1,8 +1,15 @@
 {
   "name": "d3-voronoi-map",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "D3 plugin which computes a map (one-level treemap), based on Voronoi tesselation",
-  "keywords": ["d3", "d3-module", "voronoi", "map", "diagram", "tesselation"],
+  "keywords": [
+    "d3",
+    "d3-module",
+    "voronoi",
+    "map",
+    "diagram",
+    "tesselation"
+  ],
   "license": "BSD-3-Clause",
   "author": " Kcnarf <fl.franck.lebeau@gmail.com>",
   "main": "build/d3-voronoi-map.js",
@@ -28,8 +35,8 @@
     "uglify-js": "~>2.6.0"
   },
   "dependencies": {
-    "d3-polygon": "1.0.3",
     "d3-array": "1.2.0",
+    "d3-polygon": "1.0.3",
     "d3-weighted-voronoi": "0.0.3"
   }
 }
