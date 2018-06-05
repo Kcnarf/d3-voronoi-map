@@ -3,10 +3,14 @@ import {
   polygonArea as d3PolygonArea,
   polygonContains as d3PolygonContains
 } from 'd3-polygon';
-import { weightedVoronoi as d3WeightedVoronoi } from 'd3-weighted-voronoi';
-import { FlickeringMitigation } from './flickering-mitigation';
-import randomInitialPosition from './random-initial-position';
-import halfAverageAreaInitialWeight from './half-average-area-initial-weight';
+import {
+  weightedVoronoi as d3WeightedVoronoi
+} from 'd3-weighted-voronoi';
+import {
+  FlickeringMitigation
+} from './flickering-mitigation';
+import randomInitialPosition from './initial-position-policies/random';
+import halfAverageAreaInitialWeight from './initial-weight-policies/half-average-area';
 
 export function voronoiMap() {
   //begin: constants
@@ -19,7 +23,7 @@ export function voronoiMap() {
   //end: constants
 
   /////// Inputs ///////
-  var weight = function(d) {
+  var weight = function (d) {
     return d.weight;
   }; // accessor to the weight
   var convergenceRatio = DEFAULT_CONVERGENCE_RATIO; // targeted allowed error ratio; default 0.01 stops computation when cell areas error <= 1% clipping polygon's area
@@ -27,7 +31,7 @@ export function voronoiMap() {
   var minWeightRatio = DEFAULT_MIN_WEIGHT_RATIO; // used to compute the minimum allowed weight; default 0.01 means 1% of max weight; handle near-zero weights, and leaves enought space for cell hovering
   var initialPosition = DEFAULT_INITIAL_POSITION; // accessor to the initial position; defaults to a random position inside the clipping polygon
   var initialWeight = DEFAULT_INITIAL_WEIGHT; // accessor to the initial weight; defaults to the average area of the clipping polygon
-  var tick = function(polygons, i) {
+  var tick = function (polygons, i) {
     return true;
   }; // hook called at each iteration's end (i = iteration count)
 
@@ -91,7 +95,7 @@ export function voronoiMap() {
     };
   }
 
-  _voronoiMap.weight = function(_) {
+  _voronoiMap.weight = function (_) {
     if (!arguments.length) {
       return weight;
     }
@@ -100,7 +104,7 @@ export function voronoiMap() {
     return _voronoiMap;
   };
 
-  _voronoiMap.convergenceRatio = function(_) {
+  _voronoiMap.convergenceRatio = function (_) {
     if (!arguments.length) {
       return convergenceRatio;
     }
@@ -109,7 +113,7 @@ export function voronoiMap() {
     return _voronoiMap;
   };
 
-  _voronoiMap.maxIterationCount = function(_) {
+  _voronoiMap.maxIterationCount = function (_) {
     if (!arguments.length) {
       return maxIterationCount;
     }
@@ -118,7 +122,7 @@ export function voronoiMap() {
     return _voronoiMap;
   };
 
-  _voronoiMap.minWeightRatio = function(_) {
+  _voronoiMap.minWeightRatio = function (_) {
     if (!arguments.length) {
       return minWeightRatio;
     }
@@ -127,7 +131,7 @@ export function voronoiMap() {
     return _voronoiMap;
   };
 
-  _voronoiMap.tick = function(_) {
+  _voronoiMap.tick = function (_) {
     if (!arguments.length) {
       return tick;
     }
@@ -136,7 +140,7 @@ export function voronoiMap() {
     return _voronoiMap;
   };
 
-  _voronoiMap.clip = function(_) {
+  _voronoiMap.clip = function (_) {
     if (!arguments.length) {
       return weightedVoronoi.clip();
     }
@@ -145,7 +149,7 @@ export function voronoiMap() {
     return _voronoiMap;
   };
 
-  _voronoiMap.initialPosition = function(_) {
+  _voronoiMap.initialPosition = function (_) {
     if (!arguments.length) {
       return initialPosition;
     }
@@ -154,7 +158,7 @@ export function voronoiMap() {
     return _voronoiMap;
   };
 
-  _voronoiMap.initialWeight = function(_) {
+  _voronoiMap.initialWeight = function (_) {
     if (!arguments.length) {
       return initialWeight;
     }
@@ -171,7 +175,7 @@ export function voronoiMap() {
     var adaptedMapPoints;
 
     adaptPositions(polygons, flickeringMitigationRatio);
-    adaptedMapPoints = polygons.map(function(p) {
+    adaptedMapPoints = polygons.map(function (p) {
       return p.site.originalObject;
     });
     polygons = weightedVoronoi(adaptedMapPoints);
@@ -181,7 +185,7 @@ export function voronoiMap() {
     }
 
     adaptWeights(polygons, flickeringMitigationRatio);
-    adaptedMapPoints = polygons.map(function(p) {
+    adaptedMapPoints = polygons.map(function (p) {
       return p.site.originalObject;
     });
     polygons = weightedVoronoi(adaptedMapPoints);
@@ -358,14 +362,14 @@ export function voronoiMap() {
   }
 
   function initialize(data) {
-    var maxWeight = data.reduce(function(max, d) {
+    var maxWeight = data.reduce(function (max, d) {
         return Math.max(max, weight(d));
       }, -Infinity),
       minAllowedWeight = maxWeight * minWeightRatio;
     var weights, mapPoints;
 
     //begin: extract weights
-    weights = data.map(function(d, i, arr) {
+    weights = data.map(function (d, i, arr) {
       return {
         index: i,
         weight: Math.max(weight(d), minAllowedWeight),
@@ -383,12 +387,12 @@ export function voronoiMap() {
   }
 
   function createMapPoints(basePoints) {
-    var totalWeight = basePoints.reduce(function(acc, bp) {
+    var totalWeight = basePoints.reduce(function (acc, bp) {
       return (acc += bp.weight);
     }, 0);
     var initialPosition;
 
-    return basePoints.map(function(bp, i, bps) {
+    return basePoints.map(function (bp, i, bps) {
       initialPosition = bp.initialPosition;
 
       if (!d3PolygonContains(weightedVoronoi.clip(), initialPosition)) {

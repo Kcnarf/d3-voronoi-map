@@ -175,7 +175,7 @@
     //end: constants
 
     /////// Inputs ///////
-    var weight = function(d) {
+    var weight = function (d) {
       return d.weight;
     }; // accessor to the weight
     var convergenceRatio = DEFAULT_CONVERGENCE_RATIO; // targeted allowed error ratio; default 0.01 stops computation when cell areas error <= 1% clipping polygon's area
@@ -183,7 +183,7 @@
     var minWeightRatio = DEFAULT_MIN_WEIGHT_RATIO; // used to compute the minimum allowed weight; default 0.01 means 1% of max weight; handle near-zero weights, and leaves enought space for cell hovering
     var initialPosition = DEFAULT_INITIAL_POSITION; // accessor to the initial position; defaults to a random position inside the clipping polygon
     var initialWeight = DEFAULT_INITIAL_WEIGHT; // accessor to the initial weight; defaults to the average area of the clipping polygon
-    var tick = function(polygons, i) {
+    var tick = function (polygons, i) {
       return true;
     }; // hook called at each iteration's end (i = iteration count)
 
@@ -247,7 +247,7 @@
       };
     }
 
-    _voronoiMap.weight = function(_) {
+    _voronoiMap.weight = function (_) {
       if (!arguments.length) {
         return weight;
       }
@@ -256,7 +256,7 @@
       return _voronoiMap;
     };
 
-    _voronoiMap.convergenceRatio = function(_) {
+    _voronoiMap.convergenceRatio = function (_) {
       if (!arguments.length) {
         return convergenceRatio;
       }
@@ -265,7 +265,7 @@
       return _voronoiMap;
     };
 
-    _voronoiMap.maxIterationCount = function(_) {
+    _voronoiMap.maxIterationCount = function (_) {
       if (!arguments.length) {
         return maxIterationCount;
       }
@@ -274,7 +274,7 @@
       return _voronoiMap;
     };
 
-    _voronoiMap.minWeightRatio = function(_) {
+    _voronoiMap.minWeightRatio = function (_) {
       if (!arguments.length) {
         return minWeightRatio;
       }
@@ -283,7 +283,7 @@
       return _voronoiMap;
     };
 
-    _voronoiMap.tick = function(_) {
+    _voronoiMap.tick = function (_) {
       if (!arguments.length) {
         return tick;
       }
@@ -292,7 +292,7 @@
       return _voronoiMap;
     };
 
-    _voronoiMap.clip = function(_) {
+    _voronoiMap.clip = function (_) {
       if (!arguments.length) {
         return weightedVoronoi.clip();
       }
@@ -301,7 +301,7 @@
       return _voronoiMap;
     };
 
-    _voronoiMap.initialPosition = function(_) {
+    _voronoiMap.initialPosition = function (_) {
       if (!arguments.length) {
         return initialPosition;
       }
@@ -310,7 +310,7 @@
       return _voronoiMap;
     };
 
-    _voronoiMap.initialWeight = function(_) {
+    _voronoiMap.initialWeight = function (_) {
       if (!arguments.length) {
         return initialWeight;
       }
@@ -327,7 +327,7 @@
       var adaptedMapPoints;
 
       adaptPositions(polygons, flickeringMitigationRatio);
-      adaptedMapPoints = polygons.map(function(p) {
+      adaptedMapPoints = polygons.map(function (p) {
         return p.site.originalObject;
       });
       polygons = weightedVoronoi(adaptedMapPoints);
@@ -337,7 +337,7 @@
       }
 
       adaptWeights(polygons, flickeringMitigationRatio);
-      adaptedMapPoints = polygons.map(function(p) {
+      adaptedMapPoints = polygons.map(function (p) {
         return p.site.originalObject;
       });
       polygons = weightedVoronoi(adaptedMapPoints);
@@ -514,14 +514,14 @@
     }
 
     function initialize(data) {
-      var maxWeight = data.reduce(function(max, d) {
+      var maxWeight = data.reduce(function (max, d) {
           return Math.max(max, weight(d));
         }, -Infinity),
         minAllowedWeight = maxWeight * minWeightRatio;
       var weights, mapPoints;
 
       //begin: extract weights
-      weights = data.map(function(d, i, arr) {
+      weights = data.map(function (d, i, arr) {
         return {
           index: i,
           weight: Math.max(weight(d), minAllowedWeight),
@@ -539,12 +539,12 @@
     }
 
     function createMapPoints(basePoints) {
-      var totalWeight = basePoints.reduce(function(acc, bp) {
+      var totalWeight = basePoints.reduce(function (acc, bp) {
         return (acc += bp.weight);
       }, 0);
       var initialPosition;
 
-      return basePoints.map(function(bp, i, bps) {
+      return basePoints.map(function (bp, i, bps) {
         initialPosition = bp.initialPosition;
 
         if (!d3Polygon.polygonContains(weightedVoronoi.clip(), initialPosition)) {
