@@ -1,6 +1,6 @@
 {
   "name": "d3-voronoi-map",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "D3 plugin which computes a map (one-level treemap), based on Voronoi tesselation",
   "keywords": [
     "d3",
@@ -36,7 +36,9 @@
   },
   "dependencies": {
     "d3-array": "1.2.0",
+    "d3-dispatch": "1.0.3",
     "d3-polygon": "1.0.3",
+    "d3-timer": "1.0.7",
     "d3-weighted-voronoi": "0.0.3"
   }
 }

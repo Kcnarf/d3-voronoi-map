@@ -1,1 +1,4 @@
-export {voronoiMap} from "./src/d3-voronoi-map";
+export {
+  voronoiMapSimulation
+}
+from "./src/d3-voronoi-map";

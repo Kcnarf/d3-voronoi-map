@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-polygon'), require('d3-weighted-voronoi')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'd3-polygon', 'd3-weighted-voronoi'], factory) :
-  (factory((global.d3 = global.d3 || {}),global.d3,global.d3));
-}(this, function (exports,d3Polygon,d3WeightedVoronoi) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-polygon'), require('d3-timer'), require('d3-dispatch'), require('d3-weighted-voronoi')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'd3-polygon', 'd3-timer', 'd3-dispatch', 'd3-weighted-voronoi'], factory) :
+  (factory((global.d3 = global.d3 || {}),global.d3,global.d3,global.d3,global.d3));
+}(this, function (exports,d3Polygon,d3Timer,d3Dispatch,d3WeightedVoronoi) { 'use strict';
 
   function FlickeringMitigation () {
     /////// Inputs ///////
@@ -164,7 +164,7 @@
     return totalArea/siteCount/2;  // half of the average area of the the clipping polygon
   };
 
-  function voronoiMap() {
+  function voronoiMapSimulation(data) {
     //begin: constants
     var DEFAULT_CONVERGENCE_RATIO = 0.01;
     var DEFAULT_MAX_ITERATION_COUNT = 50;
@@ -183,17 +183,24 @@
     var minWeightRatio = DEFAULT_MIN_WEIGHT_RATIO; // used to compute the minimum allowed weight; default 0.01 means 1% of max weight; handle near-zero weights, and leaves enought space for cell hovering
     var initialPosition = DEFAULT_INITIAL_POSITION; // accessor to the initial position; defaults to a random position inside the clipping polygon
     var initialWeight = DEFAULT_INITIAL_WEIGHT; // accessor to the initial weight; defaults to the average area of the clipping polygon
-    var tick = function (polygons, i) {
-      return true;
-    }; // hook called at each iteration's end (i = iteration count)
 
     //begin: internals
-    var weightedVoronoi = d3WeightedVoronoi.weightedVoronoi();
-    var siteCount,
-      totalArea,
-      areaErrorTreshold,
-      flickeringMitigation = new FlickeringMitigation();
+    var weightedVoronoi = d3WeightedVoronoi.weightedVoronoi(),
+      flickeringMitigation = new FlickeringMitigation(),
+      siteCount, // number of sites
+      totalArea, // area of the clipping polygon
+      areaErrorTreshold, // targeted allowed area error (= totalArea * convergenceRatio); below this treshold, map is considered obtained and computation stops
+      iterationCount, // current iteration
+      polygons, // current computed polygons
+      areaError, // current area error
+      converged, // true if (areaError < areaErrorTreshold)
+      ended; // stores if computation is ended, either if computation has converged or if it has reached the maximum allowed iteration
     //end: internals
+    //being: internals/simulation
+    var simulation,
+      stepper = d3Timer.timer(step),
+      event = d3Dispatch.dispatch("tick", "end");
+    //end: internals/simulation
 
     //begin: algorithm conf.
     var handleOverweightedVariant = 1; // this option still exists 'cause for further experiments
@@ -210,114 +217,154 @@
     }
     //end: utils
 
-    ///////////////////////
-    ///////// API /////////
-    ///////////////////////
+    //begin: simulation's main loop
+    function step() {
+      tick();
+      event.call("tick", simulation);
+      if (ended) {
+        stepper.stop();
+        event.call("end", simulation);
+      }
+    }
+    //end: simulation's main loop
 
-    function _voronoiMap(data) {
-      //begin: handle algorithm's variants
-      setHandleOverweighted();
-      //end: handle algorithm's variants
-
-      siteCount = data.length;
-      (totalArea = Math.abs(d3Polygon.polygonArea(weightedVoronoi.clip()))), (areaErrorTreshold = convergenceRatio * totalArea);
-      flickeringMitigation.clear().totalArea(totalArea);
-
-      var iterationCount = 0,
-        polygons = initialize(data),
-        converged = false;
-      var areaError;
-
-      tick(polygons, iterationCount);
-
-      while (!(converged || iterationCount >= maxIterationCount)) {
+    //begin: algorithm used at each iteration
+    function tick() {
+      if (!ended) {
         polygons = adapt(polygons, flickeringMitigation.ratio());
         iterationCount++;
         areaError = computeAreaError(polygons);
         flickeringMitigation.add(areaError);
         converged = areaError < areaErrorTreshold;
+        ended = (converged || iterationCount >= maxIterationCount);
         // console.log("error %: "+Math.round(areaError*100*1000/totalArea)/1000);
-        tick(polygons, iterationCount);
       }
-
-      return {
-        polygons: polygons,
-        iterationCount: iterationCount,
-        convergenceRatio: areaError / totalArea
-      };
     }
+    //end: algorithm used at each iteration
 
-    _voronoiMap.weight = function (_) {
-      if (!arguments.length) {
-        return weight;
-      }
+    function initializeSimulation() {
+      //begin: handle algorithm's variants
+      setHandleOverweighted();
+      //end: handle algorithm's variants
 
-      weight = _;
-      return _voronoiMap;
+      siteCount = data.length;
+      totalArea = Math.abs(d3Polygon.polygonArea(weightedVoronoi.clip()));
+      areaErrorTreshold = convergenceRatio * totalArea;
+      flickeringMitigation.clear().totalArea(totalArea);
+
+      iterationCount = 0;
+      converged = false;
+      polygons = initialize(data);
+      ended = false;
     };
 
-    _voronoiMap.convergenceRatio = function (_) {
-      if (!arguments.length) {
-        return convergenceRatio;
+    initializeSimulation();
+
+
+    ///////////////////////
+    ///////// API /////////
+    ///////////////////////
+
+    return simulation = {
+      tick: tick,
+
+      restart: function () {
+        stepper.restart(step);
+        return simulation;
+      },
+
+      stop: function () {
+        stepper.stop();
+        return simulation;
+      },
+
+      weight: function (_) {
+        if (!arguments.length) {
+          return weight;
+        }
+
+        weight = _;
+        initializeSimulation()
+        return simulation;
+      },
+
+      convergenceRatio: function (_) {
+        if (!arguments.length) {
+          return convergenceRatio;
+        }
+
+        convergenceRatio = _;
+        initializeSimulation()
+        return simulation;
+      },
+
+      maxIterationCount: function (_) {
+        if (!arguments.length) {
+          return maxIterationCount;
+        }
+
+        maxIterationCount = _;
+        return simulation;
+      },
+
+      minWeightRatio: function (_) {
+        if (!arguments.length) {
+          return minWeightRatio;
+        }
+
+        minWeightRatio = _;
+        initializeSimulation()
+        return simulation;
+      },
+
+      clip: function (_) {
+        if (!arguments.length) {
+          return weightedVoronoi.clip();
+        }
+
+        weightedVoronoi.clip(_);
+        initializeSimulation()
+        return simulation;
+      },
+
+      initialPosition: function (_) {
+        if (!arguments.length) {
+          return initialPosition;
+        }
+
+        initialPosition = _;
+        initializeSimulation()
+        return simulation;
+      },
+
+      initialWeight: function (_) {
+        if (!arguments.length) {
+          return initialWeight;
+        }
+
+        initialWeight = _;
+        initializeSimulation()
+        return simulation;
+      },
+
+      state: function () {
+        return {
+          ended: ended,
+          iterationCount: iterationCount,
+          convergenceRatio: areaError / totalArea,
+          polygons: polygons
+        };
+      },
+
+      on: function (name, _) {
+        if (arguments.length === 1) {
+          return event.on(name);
+        }
+
+        event.on(name, _);
+        return simulation;
       }
-
-      convergenceRatio = _;
-      return _voronoiMap;
-    };
-
-    _voronoiMap.maxIterationCount = function (_) {
-      if (!arguments.length) {
-        return maxIterationCount;
-      }
-
-      maxIterationCount = _;
-      return _voronoiMap;
-    };
-
-    _voronoiMap.minWeightRatio = function (_) {
-      if (!arguments.length) {
-        return minWeightRatio;
-      }
-
-      minWeightRatio = _;
-      return _voronoiMap;
-    };
-
-    _voronoiMap.tick = function (_) {
-      if (!arguments.length) {
-        return tick;
-      }
-
-      tick = _;
-      return _voronoiMap;
-    };
-
-    _voronoiMap.clip = function (_) {
-      if (!arguments.length) {
-        return weightedVoronoi.clip();
-      }
-
-      weightedVoronoi.clip(_);
-      return _voronoiMap;
-    };
-
-    _voronoiMap.initialPosition = function (_) {
-      if (!arguments.length) {
-        return initialPosition;
-      }
-
-      initialPosition = _;
-      return _voronoiMap;
-    };
-
-    _voronoiMap.initialWeight = function (_) {
-      if (!arguments.length) {
-        return initialWeight;
-      }
-
-      initialWeight = _;
-      return _voronoiMap;
-    };
+    }
 
     ///////////////////////
     /////// Private ///////
@@ -561,11 +608,9 @@
         };
       });
     }
-
-    return _voronoiMap;
   }
 
-  exports.voronoiMap = voronoiMap;
+  exports.voronoiMapSimulation = voronoiMapSimulation;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
