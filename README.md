@@ -13,21 +13,23 @@ Available for **d3 v4** and **d3 v5**.
 
 If you're interested on multi-level treemap, which handle nested/hierarchical data, take a look at the [d3-voronoi-treemap](https://github.com/Kcnarf/d3-voronoi-treemap) plugin.
 
-## Restrictions
-
-* quirky way to see/display intermediate computations (as in [Voronoï playground: Voronoï map (study 2)](http://bl.ocks.org/Kcnarf/2df494f34292f24964785a25d10e69c4)); better way would be to propose a simulation (cf. [d3-force's simulation](https://github.com/d3/d3-force/blob/master/src/simulation.js))
-
 ## Context
 
 D3 already provides a [d3-treemap](https://github.com/d3/d3-hierarchy/blob/master/README.md#treemap) module which produces a rectangular treemap. Such treemaps could be distorted to fit shapes that are not rectangles (cf. [Distorded Treemap - d3-shaped treemap](http://bl.ocks.org/Kcnarf/976b2e854965eea17a7754517043b91f)).
 
 This plugin allows to compute a map with a unique look-and-feel, where inner areas are not strictly aligned each others, and where the outer shape can be any hole-free convex polygons (squares, rectangles, pentagon, hexagon, ... any regular convex polygon, and also any non regular hole-free convex polygon).
 
-The drawback is that the computation of a Voronoï map is based on a iteration/looping process. Hence, it requires _some times_, depending on the number and type of data/weights, the desired representativeness of cell areas.
+The computation of the Voronoï map is based on a iteration/looping process. As the [d3-force](https://github.com/d3/d3-force) layout does, this module can be used in two ways :
+
+- _simulation_ : each iteration is displayed, so that the end user see the evolution of the self-organising Voronoï map ;
+- _static rendering_ : only the final static iteration is displayed, which is faster than the _simulation_ use case
+  The rest of this README gives some implementatiton details and example on these two usages.
+
+Also, note that obtaining the final partition requires _some times_, depending on the number and type of data/weights, the desired representativeness of cell areas.
 
 ## Examples
 
-* [The Individual Costs of Being Obese in the U.S. (2010)](https://bl.ocks.org/kcnarf/e649c8723eff3fd64a23f75901910930), a remake of [HowMuch.net's post](https://howmuch.net/articles/obesity-costs-visualized)
+- [The Individual Costs of Being Obese in the U.S. (2010)](https://bl.ocks.org/kcnarf/e649c8723eff3fd64a23f75901910930), a remake of [HowMuch.net's post](https://howmuch.net/articles/obesity-costs-visualized)
 
 ## Installing
 
@@ -38,43 +40,71 @@ Load `https://rawgit.com/Kcnarf/d3-voronoi-map/master/build/d3-voronoi-map.js` (
 <script src="https://raw.githack.com/Kcnarf/d3-weighted-voronoi/master/build/d3-weighted-voronoi.js"></script>
 <script src="https://raw.githack.com/Kcnarf/d3-voronoi-map/master/build/d3-voronoi-map.js"></script>
 <script>
-  var voronoiMap = d3.voronoiMap();
+  var simulation = d3.voronoiMapSimulation(data);
 </script>
 ```
 
 ## TL;DR;
 
-In your javascript, in order to define the tessellation:
+In your javascript, if you want to display the entire simulation (i.e. display each step of the self-organising Voronoï map) :
 
 ```javascript
-var voronoiMap = d3.voronoiMap()
-  .weight(function(d){ return weightScale(d); }         // set the weight accessor
+var simulation = d3.voronoiMapSimulation(data)
+  .weight(function(d){ return weightScale(d); }           // set the weight accessor
   .clip([[0,0], [0,height], [width, height], [width,0]])  // set the clipping polygon
+  .on ("tick", ticked);                                   // function 'ticked' is called after each iteration
 
-var res = voronoiMap(data);                         // compute the weighted Voronoi tessellation; returns {polygons, iterationCount, convergenceRatio}
-var cells = res.polygons
+function ticked() {
+  var state = simulation.state(),                         // retrieve the simulation's state, {ended, polygons, iterationCount, convergenceRatio}
+      polygons = state.polygons,                          // retrieve polygons, i.e. cells of the Voronoï map
+      drawnCells;
+
+  drawnCells = d3.selectAll('path').data(polygons);       // d3's join
+  drawnCells
+    .enter().append('path')                               // create cells at first render
+    .merge(drawnCells);                                   // assigns appropriate shapes and colors
+      .attr('d', function(d) {
+        return cellLiner(d) + 'z';
+      })
+      .style('fill', function(d) {
+        return fillScale(d.site.originalObject);
+      });
+}
 ```
 
-Then, later in your javascript, in order to draw cells:
+Or, if you want to display only the final tesselation :
 
 ```javascript
-d3
-  .selectAll('path')
-  .data(cells)
-  .enter()
-  .append('path')
-  .attr('d', function(d) {
-    return cellLiner(d) + 'z';
-  })
-  .style('fill', function(d) {
-    return fillScale(d.site.originalObject);
-  });
+var simulation = d3.voronoiMapSimulation(data)
+  .weight(function(d){ return weightScale(d); }           // set the weight accessor
+  .clip([[0,0], [0,height], [width, height], [width,0]])  // set the clipping polygon
+  .stop();                                                // interupts the simulation
+
+var state = simulation.state();                           // retrieve the simulation's state, {ended, polygons, iterationCount, convergenceRatio}
+
+while (!state.ended) {                                    // manually launch each iteration until the simulation ends
+  simulation.tick();
+  state = simulation.state();
+}
+
+var polygons = state.polygons;                            // retrieve polygons, i.e. cells of the Voronoï map
+
+d3.selectAll('path')
+  .data(polygons);                                        // d3's join
+  .enter()                                                // create cells with appropriate shapes and colors
+    .append('path')
+    .attr('d', function(d) {
+      return cellLiner(d) + 'z';
+    })
+    .style('fill', function(d) {
+      return fillScale(d.site.originalObject);
+    });
 ```
 
 ## Reference
 
-* based on [Computing Voronoï Treemaps - Faster, Simpler, and Resolution-independent ](https://www.uni-konstanz.de/mmsp/pubsys/publishedFiles/NoBr12a.pdf)
-* [https://github.com/ArlindNocaj/power-voronoi-diagram](https://github.com/ArlindNocaj/power-voronoi-diagram) for a Java implementation
+- based on [Computing Voronoï Treemaps - Faster, Simpler, and Resolution-independent ](https://www.uni-konstanz.de/mmsp/pubsys/publishedFiles/NoBr12a.pdf)
+- [https://github.com/ArlindNocaj/power-voronoi-diagram](https://github.com/ArlindNocaj/power-voronoi-diagram) for a Java implementation
 
 ## API
 
@@ -195,13 +225,13 @@ function precomputedInitialWeight(d, i, arr, weightedVoronoi) {
 
 Considering a unique clipping polygon where you want to animate the same data but with slightly different weights (e.g., animate according to the time), this API combined with the [_initialPosition_](#voronoiMap_initialPosition) API allows you to maintain areas from one set to another:
 
-* first, compute the Voronoï map of a first set of data
-* then, compute the Voronoï map of another set of data, by initilizing sites to the final values (positions and weights) of first Voronoï map
+- first, compute the Voronoï map of a first set of data
+- then, compute the Voronoï map of another set of data, by initilizing sites to the final values (positions and weights) of first Voronoï map
 
 ## Dependencies
 
-* d3-polygon.{polygonCentroid, polygonArea, polygonContains}
-* d3-weighted-voronoi.weightedVoronoi
+- d3-polygon.{polygonCentroid, polygonArea, polygonContains}
+- d3-weighted-voronoi.weightedVoronoi
 
 ## Testing
 
