@@ -90,8 +90,7 @@ while (!state.ended) {                                    // manually launch eac
 
 var polygons = state.polygons;                            // retrieve polygons, i.e. cells of the final Voronoï map
 
-d3.selectAll('path')
-  .data(polygons);                                        // d3's join
+d3.selectAll('path').data(polygons);                      // d3's join
   .enter()                                                // create cells with appropriate shapes and colors
     .append('path')
     .attr('d', function(d) {
@@ -113,9 +112,9 @@ d3.selectAll('path')
 
 Creates a new simulation with the specified array of data, and the default accessors and configuration values ([_weight_](#simulation_weight), [_clip_](#simulation_clip), [_convergenceRatio_](#simulation_convergenceRatio), [_maxIterationCount_](#simulation_maxIterationCount), [_minWeightRatio_](#simulation_minWeightRatio), [_initialPosition_](#simulation_initialPosition), and [_initialWeight_](#simulation_initialWeight)).
 
-The simulator starts automatically. For a [live](#live) Vornoï map, use [simulation.on](#simulation_on) to listen for _tick_ events as the simulation runs, and _end_ event when the simulation finishes. See [TL;DR; live Voronoï map](#tldr_live).
+The simulator starts automatically. For a [live](#live) Vornoï map, use [simulation.on](#simulation_on) to listen for _tick_ events as the simulation runs, and _end_ event when the simulation finishes. See also [TL;DR; live Voronoï map](#tldr_live).
 
-For a [static](#static) Vornoï map, call [simulation.stop](#simulation_stop), and then call [simulation.tick](#simulation_tick) as desired. See [TL;DR; static Voronoï map](#tldr_static).
+For a [static](#static) Vornoï map, call [simulation.stop](#simulation_stop), and then call [simulation.tick](#simulation_tick) as desired. See also [TL;DR; static Voronoï map](#tldr_static).
 
 <a name="simulation_state" href="#simulation_state">#</a> <i>simulation</i>.<b>state</b>()
 
@@ -257,8 +256,6 @@ Restarts the simulation’s internal timer and returns the simulation. This meth
 
 <a name="simulation_on" href="#simulation_on">#</a> <i>simulation</i>.<b>on</b>(typenames, [listener])
 
-# simulation.on(typenames, [listener]) <>
-
 If listener is specified, sets the event listener for the specified typenames and returns this simulation. If an event listener was already registered for the same type and name, the existing listener is removed before the new listener is added. If listener is null, removes the current event listeners for the specified typenames, if any. If listener is not specified, returns the first currently-assigned listener matching the specified typenames, if any. When a specified event is dispatched, each listener will be invoked with the this context as the simulation.
 
 The typenames is a string containing one or more typename separated by whitespace. Each typename is a type, optionally followed by a period (.) and a name, such as tick.foo and tick.bar; the name allows multiple listeners to be registered for the same type. The type must be one of the following:
@@ -272,9 +269,9 @@ See [dispatch.on](https://github.com/d3/d3-dispatch#dispatch_on) for details.
 
 ## Dependencies
 
-- d3-polygon.{polygonCentroid, polygonArea, polygonContains}
-- d3-timer.timer
 - d3-dispatch.dispatch
+- d3-polygon.{polygonArea, polygonCentroid, polygonContains}
+- d3-timer.timer
 - d3-weighted-voronoi.weightedVoronoi
 
 ## Testing
