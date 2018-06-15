@@ -13,10 +13,6 @@ Available for **d3 v4** and **d3 v5**.
 
 If you're interested on multi-level treemap, which handle nested/hierarchical data, take a look at the [d3-voronoi-treemap](https://github.com/Kcnarf/d3-voronoi-treemap) plugin.
 
-## Restrictions
-
-- quirky way to see/display intermediate computations (as in [Voronoï playground: Voronoï map (study 2)](http://bl.ocks.org/Kcnarf/2df494f34292f24964785a25d10e69c4)); better way would be to propose a simulation (cf. [d3-force's simulation](https://github.com/d3/d3-force/blob/master/src/simulation.js))
-
 ## Context
 
 D3 already provides a [d3-treemap](https://github.com/d3/d3-hierarchy/blob/master/README.md#treemap) module which produces a rectangular treemap. Such treemaps could be distorted to fit shapes that are not rectangles (cf. [Distorded Treemap - d3-shaped treemap](http://bl.ocks.org/Kcnarf/976b2e854965eea17a7754517043b91f)).
@@ -123,7 +119,7 @@ If _size_ is specified, it is a convenient way to define the clipping polygon as
 
 <a name="voronoiMap_convergenceRatio" href="#voronoiMap_convergenceRatio">#</a> <i>voronoiMap</i>.<b>convergenceRatio</b>([<i>convergenceRatio</i>])
 
-If _convergenceRatio_ is specified, sets the convergence ratio, which stops computation when (cell area errors / ([_clip_](#voronoiMap_clip)-ping polygon area) <= _convergenceRatio_. If _convergenceRatio_ is not specified, returns the current _convergenceRatio_ , which defaults to:
+If _convergenceRatio_ is specified, sets the convergence ratio, which stops computation when `(cell area errors / clipping polygon area) <= convergenceRatio`. If _convergenceRatio_ is not specified, returns the current _convergenceRatio_ , which defaults to:
 
 ```js
 var convergenceRation = 0.01; // stops computation when cell area error <= 1% clipping polygon's area
