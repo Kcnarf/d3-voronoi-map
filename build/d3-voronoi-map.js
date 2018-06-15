@@ -137,31 +137,31 @@
     return ratio;
   };
 
-  function randomInitialPosition (d, i, arr, weightedVoronoi) {
-    var clippingPolygon = weightedVoronoi.clip(),
-        extent = weightedVoronoi.extent(),
-        minX = extent[0][0],
-        maxX = extent[1][0],
-        minY = extent[0][1],
-        maxY = extent[1][1],
-        dx = maxX-minX,
-        dy = maxY-minY;
-    var x,y;
-    
-    x = minX+dx*Math.random();
-    y = minY+dy*Math.random();
-    while (!d3Polygon.polygonContains(clippingPolygon, [x, y])) { 
-      x = minX+dx*Math.random();
-      y = minY+dy*Math.random();
+  function randomInitialPosition (d, i, arr, voronoiMap) {
+    var clippingPolygon = voronoiMap.clip(),
+      extent = voronoiMap.extent(),
+      minX = extent[0][0],
+      maxX = extent[1][0],
+      minY = extent[0][1],
+      maxY = extent[1][1],
+      dx = maxX - minX,
+      dy = maxY - minY;
+    var x, y;
+
+    x = minX + dx * Math.random();
+    y = minY + dy * Math.random();
+    while (!d3Polygon.polygonContains(clippingPolygon, [x, y])) {
+      x = minX + dx * Math.random();
+      y = minY + dy * Math.random();
     }
     return [x, y];
   };
 
-  function halfAverageAreaInitialWeight (d, i, arr, weightedVoronoi) {
+  function halfAverageAreaInitialWeight (d, i, arr, voronoiMap) {
     var siteCount = arr.length,
-        totalArea = d3Polygon.polygonArea(weightedVoronoi.clip());
-    
-    return totalArea/siteCount/2;  // half of the average area of the the clipping polygon
+      totalArea = d3Polygon.polygonArea(voronoiMap.clip());
+
+    return totalArea / siteCount / 2; // half of the average area of the the clipping polygon
   };
 
   function voronoiMap() {
@@ -298,6 +298,24 @@
       }
 
       weightedVoronoi.clip(_);
+      return _voronoiMap;
+    };
+
+    _voronoiMap.extent = function (_) {
+      if (!arguments.length) {
+        return weightedVoronoi.extent();
+      }
+
+      weightedVoronoi.extent(_);
+      return _voronoiMap;
+    };
+
+    _voronoiMap.size = function (_) {
+      if (!arguments.length) {
+        return weightedVoronoi.size();
+      }
+
+      weightedVoronoi.size(_);
       return _voronoiMap;
     };
 
@@ -525,8 +543,8 @@
         return {
           index: i,
           weight: Math.max(weight(d), minAllowedWeight),
-          initialPosition: initialPosition(d, i, arr, weightedVoronoi),
-          initialWeight: initialWeight(d, i, arr, weightedVoronoi),
+          initialPosition: initialPosition(d, i, arr, _voronoiMap),
+          initialWeight: initialWeight(d, i, arr, _voronoiMap),
           originalData: d
         };
       });
@@ -548,7 +566,7 @@
         initialPosition = bp.initialPosition;
 
         if (!d3Polygon.polygonContains(weightedVoronoi.clip(), initialPosition)) {
-          initialPosition = randomInitialPosition(bp, i, bps, weightedVoronoi);
+          initialPosition = randomInitialPosition(bp, i, bps, _voronoiMap);
         }
 
         return {

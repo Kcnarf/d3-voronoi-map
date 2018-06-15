@@ -15,7 +15,7 @@ If you're interested on multi-level treemap, which handle nested/hierarchical da
 
 ## Restrictions
 
-* quirky way to see/display intermediate computations (as in [Voronoï playground: Voronoï map (study 2)](http://bl.ocks.org/Kcnarf/2df494f34292f24964785a25d10e69c4)); better way would be to propose a simulation (cf. [d3-force's simulation](https://github.com/d3/d3-force/blob/master/src/simulation.js))
+- quirky way to see/display intermediate computations (as in [Voronoï playground: Voronoï map (study 2)](http://bl.ocks.org/Kcnarf/2df494f34292f24964785a25d10e69c4)); better way would be to propose a simulation (cf. [d3-force's simulation](https://github.com/d3/d3-force/blob/master/src/simulation.js))
 
 ## Context
 
@@ -27,7 +27,7 @@ The drawback is that the computation of a Voronoï map is based on a iteration/l
 
 ## Examples
 
-* [The Individual Costs of Being Obese in the U.S. (2010)](https://bl.ocks.org/kcnarf/e649c8723eff3fd64a23f75901910930), a remake of [HowMuch.net's post](https://howmuch.net/articles/obesity-costs-visualized)
+- [The Individual Costs of Being Obese in the U.S. (2010)](https://bl.ocks.org/kcnarf/e649c8723eff3fd64a23f75901910930), a remake of [HowMuch.net's post](https://howmuch.net/articles/obesity-costs-visualized)
 
 ## Installing
 
@@ -58,8 +58,7 @@ var cells = res.polygons
 Then, later in your javascript, in order to draw cells:
 
 ```javascript
-d3
-  .selectAll('path')
+d3.selectAll('path')
   .data(cells)
   .enter()
   .append('path')
@@ -73,8 +72,8 @@ d3
 
 ## Reference
 
-* based on [Computing Voronoï Treemaps - Faster, Simpler, and Resolution-independent ](https://www.uni-konstanz.de/mmsp/pubsys/publishedFiles/NoBr12a.pdf)
-* [https://github.com/ArlindNocaj/power-voronoi-diagram](https://github.com/ArlindNocaj/power-voronoi-diagram) for a Java implementation
+- based on [Computing Voronoï Treemaps - Faster, Simpler, and Resolution-independent ](https://www.uni-konstanz.de/mmsp/pubsys/publishedFiles/NoBr12a.pdf)
+- [https://github.com/ArlindNocaj/power-voronoi-diagram](https://github.com/ArlindNocaj/power-voronoi-diagram) for a Java implementation
 
 ## API
 
@@ -100,10 +99,26 @@ function weight(d) {
 
 <a name="voronoiMap_clip" href="#voronoiMap_clip">#</a> <i>voronoiMap</i>.<b>clip</b>([<i>clip</i>])
 
-If _clip_ is specified, sets the clipping polygon. _clip_ defines a hole-free convex polygon, and is specified as an array of 2D points \[x, y\], which must be _(i)_ open (no duplication of the first D2 point) and _(ii)_ counterclockwise (assuming the origin ⟨0,0⟩ is in the top-left corner). If _clip_ is not specified, returns the current clipping polygon, which defaults to:
+If _clip_ is specified, sets the clipping polygon, compute the adequate [_extent_](#voronoiMap_extent) and [_size_](#voronoiMap_size), and returns this layout. _clip_ defines a hole-free convex polygon, and is specified as an array of 2D points \[x, y\], which must be _(i)_ open (no duplication of the first D2 point) and _(ii)_ counterclockwise (assuming the origin ⟨0,0⟩ is in the top-left corner). If _clip_ is not specified, returns the current clipping polygon, which defaults to:
 
 ```js
 [[0, 0], [0, 1], [1, 1], [1, 0]];
+```
+
+<a name="voronoiMap_extent" href="#voronoiMap_extent">#</a> <i>voronoiMap</i>.<b>extent</b>([<i>extent</i>])
+
+If _extent_ is specified, it is a convenient way to define the clipping polygon as a rectangle. It sets the extent, computes the adequate [_clip_](#voronoiMap_clip)ping polygon and [_size_](#voronoiMap_size), and returns this layout. _extent_ must be a two-element array of 2D points \[x, y\], which defines the clipping polygon as a rectangle with the top-left and bottom-right corners respectively set to the first and second points (assuming the origin ⟨0,0⟩ is in the top-left corner on the screen). If _extent_ is not specified, returns the current extent, which is `[[minX, minY], [maxX, maxY]]` of current clipping polygon, and defaults to:
+
+```js
+[[0, 0], [1, 1]];
+```
+
+<a name="voronoiMap_size" href="#voronoiMap_size">#</a> <i>voronoiMap</i>.<b>size</b>([<i>size</i>])
+
+If _size_ is specified, it is a convenient way to define the clipping polygon as a rectangle. It sets the size, computes the adequate [_clip_](#voronoiMap_clip)ping polygon and [_extent_](#voronoiMap_extent), and returns this layout. _size_ must be a two-element array of numbers `[width, height]`, which defines the clipping polygon as a rectangle with the top-left corner set to `[0, 0]`and the bottom-right corner set to `[width, height]`(assuming the origin ⟨0,0⟩ is in the top-left corner on the screen). If _size_ is not specified, returns the current size, which is `[maxX-minX, maxY-minY]` of current clipping polygon, and defaults to:
+
+```js
+[1, 1];
 ```
 
 <a name="voronoiMap_convergenceRatio" href="#voronoiMap_convergenceRatio">#</a> <i>voronoiMap</i>.<b>convergenceRatio</b>([<i>convergenceRatio</i>])
@@ -138,12 +153,12 @@ _minWeightRatio_ allows to mitigate flickerring behaviour (caused by too small w
 
 <a name="voronoiMap_initialPosition" href="#voronoiMap_initialPosition">#</a> <i>voronoiMap</i>.<b>initialPosition</b>([<i>initialPosition</i>])
 
-If _initialPosition_ is specified, sets the initial coordinate accessor. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the underlying [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi) layout (which notably computes the initial diagram). The accessor must provide an array of two numbers `[x, y]` inside the clipping polygon, otherwise a random initial position is used instead. If _initialPosition_ is not specified, returns the current accessor, which defaults to a random position inside the clipping polygon:
+If _initialPosition_ is specified, sets the initial coordinate accessor. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the current d3-voronoi-map. The accessor must provide an array of two numbers `[x, y]` inside the clipping polygon, otherwise a random initial position is used instead. If _initialPosition_ is not specified, returns the current accessor, which defaults to a random position inside the clipping polygon:
 
 ```js
-function randomInitialPosition(d, i, arr, weightedVoronoi) {
-  var clippingPolygon = weightedVoronoi.clip(),
-    extent = weightedVoronoi.extent(),
+function randomInitialPosition(d, i, arr, voronoiMap) {
+  var clippingPolygon = voronoiMap.clip(),
+    extent = voronoiMap.extent(),
     minX = extent[0][0],
     maxX = extent[1][0],
     minY = extent[0][1],
@@ -162,10 +177,10 @@ function randomInitialPosition(d, i, arr, weightedVoronoi) {
 }
 ```
 
-Above is a quite complex accessor that uses the [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi)'s API to ensure that sites are positioned inside the clipping polygon, but the accessor may be simpler (-:
+Above is a quite complex accessor that uses the current d3-voronoi-map's API to ensure that sites are positioned inside the clipping polygon, but the accessor may be simpler (-:
 
 ```js
-function precomputedInitialPosition(d, i, arr, weightedVoronoi) {
+function precomputedInitialPosition(d, i, arr, voronoiMap) {
   return [d.precomputedX, d.precomputedY];
 }
 ```
@@ -174,34 +189,34 @@ Considering the same set of data, severall Voronoï map computations lead to dis
 
 <a name="voronoiMap_initialWeight" href="#voronoiMap_initialWeight">#</a> <i>voronoiMap</i>.<b>initialWeight</b>([<i>initialWeight</i>])
 
-If _initialWeight_ is specified, sets the initial weight accessor. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the underlying [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi) layout (which notably computes the initial diagram). The accessor must provide apositive amount. If _initialWeight_ is not specified, returns the current accessor, which defaults to initialize all sites with the same amount (which depends on the clipping polygon and the number of data):
+If _initialWeight_ is specified, sets the initial weight accessor. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the current d3-voronoi-map. The accessor must provide a positive amount. If _initialWeight_ is not specified, returns the current accessor, which defaults to initialize all sites with the same amount (which depends on the clipping polygon and the number of data):
 
 ```js
-function halfAverageAreaInitialWeight(d, i, arr, weightedVoronoi) {
+function halfAverageAreaInitialWeight(d, i, arr, vornoiMap) {
   var siteCount = arr.length,
-    totalArea = d3PolygonArea(weightedVoronoi.clip());
+    totalArea = d3PolygonArea(vornoiMap.clip());
 
   return totalArea / siteCount / 2; // half of the average area of the the clipping polygon
 }
 ```
 
-Above is a quite complex accessor that uses the [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi)'s API that sets the same weight for all sites, but the accessor may be simpler (-:
+Above is a quite complex accessor that uses the current d3-voronoi-map's API that sets the same weight for all sites, but the accessor may be simpler (-:
 
 ```js
-function precomputedInitialWeight(d, i, arr, weightedVoronoi) {
+function precomputedInitialWeight(d, i, arr, voronoiMap) {
   return d.precomputedWeight;
 }
 ```
 
 Considering a unique clipping polygon where you want to animate the same data but with slightly different weights (e.g., animate according to the time), this API combined with the [_initialPosition_](#voronoiMap_initialPosition) API allows you to maintain areas from one set to another:
 
-* first, compute the Voronoï map of a first set of data
-* then, compute the Voronoï map of another set of data, by initilizing sites to the final values (positions and weights) of first Voronoï map
+- first, compute the Voronoï map of a first set of data
+- then, compute the Voronoï map of another set of data, by initilizing sites to the final values (positions and weights) of first Voronoï map
 
 ## Dependencies
 
-* d3-polygon.{polygonCentroid, polygonArea, polygonContains}
-* d3-weighted-voronoi.weightedVoronoi
+- d3-polygon.{polygonCentroid, polygonArea, polygonContains}
+- d3-weighted-voronoi.weightedVoronoi
 
 ## Testing
 

@@ -149,6 +149,24 @@ export function voronoiMap() {
     return _voronoiMap;
   };
 
+  _voronoiMap.extent = function (_) {
+    if (!arguments.length) {
+      return weightedVoronoi.extent();
+    }
+
+    weightedVoronoi.extent(_);
+    return _voronoiMap;
+  };
+
+  _voronoiMap.size = function (_) {
+    if (!arguments.length) {
+      return weightedVoronoi.size();
+    }
+
+    weightedVoronoi.size(_);
+    return _voronoiMap;
+  };
+
   _voronoiMap.initialPosition = function (_) {
     if (!arguments.length) {
       return initialPosition;
@@ -373,8 +391,8 @@ export function voronoiMap() {
       return {
         index: i,
         weight: Math.max(weight(d), minAllowedWeight),
-        initialPosition: initialPosition(d, i, arr, weightedVoronoi),
-        initialWeight: initialWeight(d, i, arr, weightedVoronoi),
+        initialPosition: initialPosition(d, i, arr, _voronoiMap),
+        initialWeight: initialWeight(d, i, arr, _voronoiMap),
         originalData: d
       };
     });
@@ -396,7 +414,7 @@ export function voronoiMap() {
       initialPosition = bp.initialPosition;
 
       if (!d3PolygonContains(weightedVoronoi.clip(), initialPosition)) {
-        initialPosition = randomInitialPosition(bp, i, bps, weightedVoronoi);
+        initialPosition = randomInitialPosition(bp, i, bps, _voronoiMap);
       }
 
       return {
