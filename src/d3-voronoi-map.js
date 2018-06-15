@@ -182,13 +182,33 @@ export function voronoiMapSimulation(data) {
       return simulation;
     },
 
+    extent: function (_) {
+      if (!arguments.length) {
+        return weightedVoronoi.extent();
+      }
+
+      weightedVoronoi.extent(_);
+      initializeSimulation()
+      return simulation;
+    },
+
+    size: function (_) {
+      if (!arguments.length) {
+        return weightedVoronoi.size();
+      }
+
+      weightedVoronoi.size(_);
+      initializeSimulation();
+      return simulation;
+    },
+
     initialPosition: function (_) {
       if (!arguments.length) {
         return initialPosition;
       }
 
       initialPosition = _;
-      initializeSimulation()
+      initializeSimulation();
       return simulation;
     },
 
@@ -198,7 +218,7 @@ export function voronoiMapSimulation(data) {
       }
 
       initialWeight = _;
-      initializeSimulation()
+      initializeSimulation();
       return simulation;
     },
 

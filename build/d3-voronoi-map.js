@@ -137,31 +137,31 @@
     return ratio;
   };
 
-  function randomInitialPosition (d, i, arr, weightedVoronoi) {
-    var clippingPolygon = weightedVoronoi.clip(),
-        extent = weightedVoronoi.extent(),
-        minX = extent[0][0],
-        maxX = extent[1][0],
-        minY = extent[0][1],
-        maxY = extent[1][1],
-        dx = maxX-minX,
-        dy = maxY-minY;
-    var x,y;
-    
-    x = minX+dx*Math.random();
-    y = minY+dy*Math.random();
-    while (!d3Polygon.polygonContains(clippingPolygon, [x, y])) { 
-      x = minX+dx*Math.random();
-      y = minY+dy*Math.random();
+  function randomInitialPosition (d, i, arr, voronoiMapSimulation) {
+    var clippingPolygon = voronoiMapSimulation.clip(),
+      extent = voronoiMapSimulation.extent(),
+      minX = extent[0][0],
+      maxX = extent[1][0],
+      minY = extent[0][1],
+      maxY = extent[1][1],
+      dx = maxX - minX,
+      dy = maxY - minY;
+    var x, y;
+
+    x = minX + dx * Math.random();
+    y = minY + dy * Math.random();
+    while (!d3Polygon.polygonContains(clippingPolygon, [x, y])) {
+      x = minX + dx * Math.random();
+      y = minY + dy * Math.random();
     }
     return [x, y];
   };
 
-  function halfAverageAreaInitialWeight (d, i, arr, weightedVoronoi) {
+  function halfAverageAreaInitialWeight (d, i, arr, voronoiMapSimulation) {
     var siteCount = arr.length,
-        totalArea = d3Polygon.polygonArea(weightedVoronoi.clip());
-    
-    return totalArea/siteCount/2;  // half of the average area of the the clipping polygon
+      totalArea = d3Polygon.polygonArea(voronoiMapSimulation.clip());
+
+    return totalArea / siteCount / 2; // half of the average area of the the clipping polygon
   };
 
   function voronoiMapSimulation(data) {
@@ -327,13 +327,33 @@
         return simulation;
       },
 
+      extent: function (_) {
+        if (!arguments.length) {
+          return weightedVoronoi.extent();
+        }
+
+        weightedVoronoi.extent(_);
+        initializeSimulation()
+        return simulation;
+      },
+
+      size: function (_) {
+        if (!arguments.length) {
+          return weightedVoronoi.size();
+        }
+
+        weightedVoronoi.size(_);
+        initializeSimulation();
+        return simulation;
+      },
+
       initialPosition: function (_) {
         if (!arguments.length) {
           return initialPosition;
         }
 
         initialPosition = _;
-        initializeSimulation()
+        initializeSimulation();
         return simulation;
       },
 
@@ -343,7 +363,7 @@
         }
 
         initialWeight = _;
-        initializeSimulation()
+        initializeSimulation();
         return simulation;
       },
 

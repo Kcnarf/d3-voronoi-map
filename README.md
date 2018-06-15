@@ -140,10 +140,26 @@ function weight(d) {
 
 <a name="simulation_clip" href="#simulation_clip">#</a> <i>simulation</i>.<b>clip</b>([<i>clip</i>])
 
-If _clip_ is specified, sets the clipping polygon. _clip_ defines a hole-free convex polygon, and is specified as an array of 2D points \[x, y\], which must be _(i)_ open (no duplication of the first D2 point) and _(ii)_ counterclockwise (assuming the origin ⟨0,0⟩ is in the top-left corner). If _clip_ is not specified, returns the current clipping polygon, which defaults to:
+If _clip_ is specified, sets the clipping polygon, compute the adequate [_extent_](#simulation_extent) and [_size_](#simulation_size), and returns this layout. _clip_ defines a hole-free convex polygon, and is specified as an array of 2D points \[x, y\], which must be _(i)_ open (no duplication of the first D2 point) and _(ii)_ counterclockwise (assuming the origin ⟨0,0⟩ is in the top-left corner). If _clip_ is not specified, returns the current clipping polygon, which defaults to:
 
 ```js
 [[0, 0], [0, 1], [1, 1], [1, 0]];
+```
+
+<a name="simulation_extent" href="#simulation_extent">#</a> <i>simulation</i>.<b>extent</b>([<i>extent</i>])
+
+If _extent_ is specified, it is a convenient way to define the clipping polygon as a rectangle. It sets the extent, computes the adequate [_clip_](#simulation_clip)ping polygon and [_size_](#simulation_size), and returns this layout. _extent_ must be a two-element array of 2D points \[x, y\], which defines the clipping polygon as a rectangle with the top-left and bottom-right corners respectively set to the first and second points (assuming the origin ⟨0,0⟩ is in the top-left corner on the screen). If _extent_ is not specified, returns the current extent, which is `[[minX, minY], [maxX, maxY]]` of current clipping polygon, and defaults to:
+
+```js
+[[0, 0], [1, 1]];
+```
+
+<a name="simulation_size" href="#simulation_size">#</a> <i>simulation</i>.<b>size</b>([<i>size</i>])
+
+If _size_ is specified, it is a convenient way to define the clipping polygon as a rectangle. It sets the size, computes the adequate [_clip_](#simulation_clip)ping polygon and [_extent_](#simulation_extent), and returns this layout. _size_ must be a two-element array of numbers `[width, height]`, which defines the clipping polygon as a rectangle with the top-left corner set to `[0, 0]`and the bottom-right corner set to `[width, height]`(assuming the origin ⟨0,0⟩ is in the top-left corner on the screen). If _size_ is not specified, returns the current size, which is `[maxX-minX, maxY-minY]` of current clipping polygon, and defaults to:
+
+```js
+[1, 1];
 ```
 
 <a name="simulation_convergenceRatio" href="#simulation_convergenceRatio">#</a> <i>simulation</i>.<b>convergenceRatio</b>([<i>convergenceRatio</i>])
@@ -178,7 +194,7 @@ _minWeightRatio_ allows to mitigate flickerring behaviour (caused by too small w
 
 <a name="simulation_initialPosition" href="#simulation_initialPosition">#</a> <i>simulation</i>.<b>initialPosition</b>([<i>initialPosition</i>])
 
-If _initialPosition_ is specified, sets the initial coordinate accessor. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the underlying [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi) layout (which notably computes the initial map). The accessor must provide an array of two numbers `[x, y]` inside the clipping polygon, otherwise a random initial position is used instead. If _initialPosition_ is not specified, returns the current accessor, which defaults to a random position inside the clipping polygon:
+If _initialPosition_ is specified, sets the initial coordinate accessor. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the _simulation_. The accessor must provide an array of two numbers `[x, y]` inside the clipping polygon, otherwise a random initial position is used instead. If _initialPosition_ is not specified, returns the current accessor, which defaults to a random position inside the clipping polygon:
 
 ```js
 function randomInitialPosition(d, i, arr, weightedVoronoi) {
@@ -202,7 +218,7 @@ function randomInitialPosition(d, i, arr, weightedVoronoi) {
 }
 ```
 
-Above is a quite complex accessor that uses the [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi)'s API to ensure that sites are positioned inside the clipping polygon, but the accessor may be simpler (-:
+Above is a quite complex accessor that uses the _simulation_'s API to ensure that sites are positioned inside the clipping polygon, but the accessor may be simpler (-:
 
 ```js
 function precomputedInitialPosition(d, i, arr, weightedVoronoi) {
@@ -214,7 +230,7 @@ Considering the same set of data, severall Voronoï map simulations lead to disc
 
 <a name="simulation_initialWeight" href="#simulation_initialWeight">#</a> <i>simulation</i>.<b>initialWeight</b>([<i>initialWeight</i>])
 
-If _initialWeight_ is specified, sets the initial weight accessor. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the underlying [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi) layout (which notably computes the initial map). The accessor must provide a positive amount. If _initialWeight_ is not specified, returns the current accessor, which defaults to initialize all sites with the same amount (which depends on the clipping polygon and the number of data):
+If _initialWeight_ is specified, sets the initial weight accessor. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the current _simulation_. The accessor must provide a positive amount. If _initialWeight_ is not specified, returns the current accessor, which defaults to initialize all sites with the same amount (which depends on the clipping polygon and the number of data):
 
 ```js
 function halfAverageAreaInitialWeight(d, i, arr, weightedVoronoi) {
@@ -225,7 +241,7 @@ function halfAverageAreaInitialWeight(d, i, arr, weightedVoronoi) {
 }
 ```
 
-Above is a quite complex accessor that uses the [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi)'s API that sets the same weight for all sites, but the accessor may be simpler (-:
+Above is a quite complex accessor that uses the _simulation_'s API that sets the same weight for all sites, but the accessor may be simpler (-:
 
 ```js
 function precomputedInitialWeight(d, i, arr, weightedVoronoi) {

@@ -22,7 +22,7 @@ tape("voronoiMapSimulation(...) should set the expected defaults", function (tes
   test.end();
 });
 
-tape("voronoiMapSimulationSimulation.weight(...) should set the specified weight-accessor", function (test) {
+tape("voronoiMapSimulation.weight(...) should set the specified weight-accessor", function (test) {
   const datum = {
       weight: 1,
       weightPrime: 2
@@ -38,29 +38,81 @@ tape("voronoiMapSimulationSimulation.weight(...) should set the specified weight
   test.end();
 });
 
-tape("voronoiMapSimulationSimulation.clip(...) should set the adequate convex, hole-free, counterclockwise clipping polygon", function (test) {
+tape("voronoiMapSimulation.clip(...) should set the adequate convex, hole-free, counterclockwise clipping polygon, extent and size", function (test) {
   const datum = {
       weight: 1
     },
     voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).stop(),
     newClip = [
-      [0, 0],
-      [0, 1],
-      [1, 0],
-      [1, 1]
+      [1, 1],
+      [1, 3],
+      [3, 1],
+      [3, 3]
     ]; //self-intersecting polygon
 
   test.equal(voronoiMapSimulation.clip(newClip), voronoiMapSimulation);
   test.deepEqual(voronoiMapSimulation.clip(), [
+    [3, 3],
+    [3, 1],
     [1, 1],
-    [1, 0],
-    [0, 0],
-    [0, 1]
+    [1, 3]
   ]);
+  test.deepEqual(voronoiMapSimulation.extent(), [
+    [1, 1],
+    [3, 3]
+  ]);
+  test.deepEqual(voronoiMapSimulation.size(), [2, 2]);
   test.end();
 });
 
-tape("voronoiMapSimulationSimulation.convergenceRatio(...) should set the specified convergence treshold", function (test) {
+tape('voronoiMapSimulation.extent(...) should set adequate extent, clipping polygon and size', function (test) {
+  const datum = {
+      weight: 1
+    },
+    voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).stop(),
+    newExtent = [
+      [1, 1],
+      [3, 3]
+    ];
+
+  test.equal(voronoiMapSimulation.extent(newExtent), voronoiMapSimulation);
+  test.deepEqual(voronoiMapSimulation.clip(), [
+    [1, 1],
+    [1, 3],
+    [3, 3],
+    [3, 1]
+  ]);
+  test.deepEqual(voronoiMapSimulation.extent(), [
+    [1, 1],
+    [3, 3]
+  ]);
+  test.deepEqual(voronoiMapSimulation.size(), [2, 2]);
+  test.end();
+});
+
+tape('voronoiMap.size(...) should set adequate size, clipping polygon and extent', function (test) {
+  var datum = {
+      weight: 1
+    },
+    voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).stop(),
+    newSize = [2, 3];
+
+  test.equal(voronoiMapSimulation.size(newSize), voronoiMapSimulation);
+  test.deepEqual(voronoiMapSimulation.clip(), [
+    [0, 0],
+    [0, 3],
+    [2, 3],
+    [2, 0]
+  ]);
+  test.deepEqual(voronoiMapSimulation.extent(), [
+    [0, 0],
+    [2, 3]
+  ]);
+  test.deepEqual(voronoiMapSimulation.size(), [2, 3]);
+  test.end();
+});
+
+tape("voronoiMapSimulation.convergenceRatio(...) should set the specified convergence treshold", function (test) {
   const datum = {
       weight: 1
     },
@@ -71,7 +123,7 @@ tape("voronoiMapSimulationSimulation.convergenceRatio(...) should set the specif
   test.end();
 });
 
-tape("voronoiMapSimulationSimulation.maxIterationCount(...) should set the specified allowed number of iterations", function (test) {
+tape("voronoiMapSimulation.maxIterationCount(...) should set the specified allowed number of iterations", function (test) {
   const datum = {
       weight: 1
     },
@@ -82,7 +134,7 @@ tape("voronoiMapSimulationSimulation.maxIterationCount(...) should set the speci
   test.end();
 });
 
-tape("voronoiMapSimulationSimulation.minWeightRatio(...) should set the specified ratio", function (test) {
+tape("voronoiMapSimulation.minWeightRatio(...) should set the specified ratio", function (test) {
   const datum = {
       weight: 1
     },
@@ -93,9 +145,9 @@ tape("voronoiMapSimulationSimulation.minWeightRatio(...) should set the specifie
   test.end();
 });
 
-tape("voronoiMapSimulationSimulation.initialPosition(...)", function (test) {
+tape("voronoiMapSimulation.initialPosition(...)", function (test) {
 
-  test.test("voronoiMapSimulationSimulation.initialPosition(...) should set the specified callback", function (test) {
+  test.test("voronoiMapSimulation.initialPosition(...) should set the specified callback", function (test) {
     const datum = {
         weight: 1,
         precomputedX: 0.3,
@@ -112,7 +164,7 @@ tape("voronoiMapSimulationSimulation.initialPosition(...)", function (test) {
     test.end();
   });
 
-  test.test("voronoiMapSimulationSimulation.initialPosition(...) should fallback to a random position if specified callback retruns a position ouside the clipping polygon", function (test) {
+  test.test("voronoiMapSimulation.initialPosition(...) should fallback to a random position if specified callback retruns a position ouside the clipping polygon", function (test) {
     const datum = {
         weight: 1,
         precomputedX: 2,
@@ -134,7 +186,7 @@ tape("voronoiMapSimulationSimulation.initialPosition(...)", function (test) {
     test.end();
   });
 
-  test.test("voronoiMapSimulationSimulation.initialPosition(...) should fallback to a random position if specified callback retruns unexpected results", function (test) {
+  test.test("voronoiMapSimulation.initialPosition(...) should fallback to a random position if specified callback retruns unexpected results", function (test) {
     var datum = {
         weight: 1,
         precomputedX: 2,
@@ -192,7 +244,7 @@ tape("voronoiMapSimulationSimulation.initialPosition(...)", function (test) {
   });
 });
 
-tape("voronoiMapSimulationSimulation.state() should reflect inner state of the simulation", function (test) {
+tape("voronoiMapSimulation.state() should reflect inner state of the simulation", function (test) {
   test.test("basic use case", function (test) {
     const data = [{
         weight: 1
@@ -219,8 +271,8 @@ tape("voronoiMapSimulationSimulation.state() should reflect inner state of the s
     test.end();
   });
 
-  tape("voronoiMapSimulationSimulation.on(...)", function (test) {
-    test.test("voronoiMapSimulationSimulation.on('tick', ...) should set the specified callback", function (test) {
+  tape("voronoiMapSimulation.on(...)", function (test) {
+    test.test("voronoiMapSimulation.on('tick', ...) should set the specified callback", function (test) {
       const datum = {
           weight: 1
         },
@@ -234,7 +286,7 @@ tape("voronoiMapSimulationSimulation.state() should reflect inner state of the s
       test.end();
     });
 
-    test.test("voronoiMapSimulationSimulation.on('end', ...) should set the specified callback", function (test) {
+    test.test("voronoiMapSimulation.on('end', ...) should set the specified callback", function (test) {
       const datum = {
           weight: 1
         },
