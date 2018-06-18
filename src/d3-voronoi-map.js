@@ -54,7 +54,7 @@ export function voronoiMapSimulation(data) {
   //being: internals/simulation
   var simulation,
     stepper = d3Timer(step),
-    event = d3Dispatch("tick", "end");
+    event = d3Dispatch('tick', 'end');
   //end: internals/simulation
 
   //begin: algorithm conf.
@@ -72,55 +72,11 @@ export function voronoiMapSimulation(data) {
   }
   //end: utils
 
-  //begin: simulation's main loop
-  function step() {
-    tick();
-    event.call("tick", simulation);
-    if (ended) {
-      stepper.stop();
-      event.call("end", simulation);
-    }
-  }
-  //end: simulation's main loop
-
-  //begin: algorithm used at each iteration
-  function tick() {
-    if (!ended) {
-      polygons = adapt(polygons, flickeringMitigation.ratio());
-      iterationCount++;
-      areaError = computeAreaError(polygons);
-      flickeringMitigation.add(areaError);
-      converged = areaError < areaErrorTreshold;
-      ended = (converged || iterationCount >= maxIterationCount);
-      // console.log("error %: "+Math.round(areaError*100*1000/totalArea)/1000);
-    }
-  }
-  //end: algorithm used at each iteration
-
-  function initializeSimulation() {
-    //begin: handle algorithm's variants
-    setHandleOverweighted();
-    //end: handle algorithm's variants
-
-    siteCount = data.length;
-    totalArea = Math.abs(d3PolygonArea(weightedVoronoi.clip()));
-    areaErrorTreshold = convergenceRatio * totalArea;
-    flickeringMitigation.clear().totalArea(totalArea);
-
-    iterationCount = 0;
-    converged = false;
-    polygons = initialize(data);
-    ended = false;
-  };
-
-  initializeSimulation();
-
-
   ///////////////////////
   ///////// API /////////
   ///////////////////////
 
-  return simulation = {
+  simulation = {
     tick: tick,
 
     restart: function () {
@@ -139,7 +95,7 @@ export function voronoiMapSimulation(data) {
       }
 
       weight = _;
-      initializeSimulation()
+      initializeSimulation();
       return simulation;
     },
 
@@ -149,7 +105,7 @@ export function voronoiMapSimulation(data) {
       }
 
       convergenceRatio = _;
-      initializeSimulation()
+      initializeSimulation();
       return simulation;
     },
 
@@ -168,7 +124,7 @@ export function voronoiMapSimulation(data) {
       }
 
       minWeightRatio = _;
-      initializeSimulation()
+      initializeSimulation();
       return simulation;
     },
 
@@ -178,7 +134,7 @@ export function voronoiMapSimulation(data) {
       }
 
       weightedVoronoi.clip(_);
-      initializeSimulation()
+      initializeSimulation();
       return simulation;
     },
 
@@ -188,7 +144,7 @@ export function voronoiMapSimulation(data) {
       }
 
       weightedVoronoi.extent(_);
-      initializeSimulation()
+      initializeSimulation();
       return simulation;
     },
 
@@ -239,11 +195,101 @@ export function voronoiMapSimulation(data) {
       event.on(name, _);
       return simulation;
     }
-  }
+  };
 
   ///////////////////////
   /////// Private ///////
   ///////////////////////
+
+  //begin: simulation's main loop
+  function step() {
+    tick();
+    event.call('tick', simulation);
+    if (ended) {
+      stepper.stop();
+      event.call('end', simulation);
+    }
+  }
+  //end: simulation's main loop
+
+  //begin: algorithm used at each iteration
+  function tick() {
+    if (!ended) {
+      polygons = adapt(polygons, flickeringMitigation.ratio());
+      iterationCount++;
+      areaError = computeAreaError(polygons);
+      flickeringMitigation.add(areaError);
+      converged = areaError < areaErrorTreshold;
+      ended = converged || iterationCount >= maxIterationCount;
+      // console.log("error %: "+Math.round(areaError*100*1000/totalArea)/1000);
+    }
+  }
+  //end: algorithm used at each iteration
+
+  function initializeSimulation() {
+    //begin: handle algorithm's variants
+    setHandleOverweighted();
+    //end: handle algorithm's variants
+
+    siteCount = data.length;
+    totalArea = Math.abs(d3PolygonArea(weightedVoronoi.clip()));
+    areaErrorTreshold = convergenceRatio * totalArea;
+    flickeringMitigation.clear().totalArea(totalArea);
+
+    iterationCount = 0;
+    converged = false;
+    polygons = initialize(data, simulation);
+    ended = false;
+  }
+
+  function initialize(data, simulation) {
+    var maxWeight = data.reduce(function (max, d) {
+        return Math.max(max, weight(d));
+      }, -Infinity),
+      minAllowedWeight = maxWeight * minWeightRatio;
+    var weights, mapPoints;
+
+    //begin: extract weights
+    weights = data.map(function (d, i, arr) {
+      return {
+        index: i,
+        weight: Math.max(weight(d), minAllowedWeight),
+        initialPosition: initialPosition(d, i, arr, simulation),
+        initialWeight: initialWeight(d, i, arr, simulation),
+        originalData: d
+      };
+    });
+    //end: extract weights
+
+    // create map-related points
+    // (with targetedArea, initial position and initialWeight)
+    mapPoints = createMapPoints(weights, simulation);
+    return weightedVoronoi(mapPoints);
+  }
+
+  function createMapPoints(basePoints, simulation) {
+    var totalWeight = basePoints.reduce(function (acc, bp) {
+      return (acc += bp.weight);
+    }, 0);
+    var initialPosition;
+
+    return basePoints.map(function (bp, i, bps) {
+      initialPosition = bp.initialPosition;
+
+      if (!d3PolygonContains(weightedVoronoi.clip(), initialPosition)) {
+        initialPosition = randomInitialPosition(bp, i, bps, simulation);
+      }
+
+      return {
+        index: bp.index,
+        targetedArea: (totalArea * bp.weight) / totalWeight,
+        data: bp,
+        x: initialPosition[0],
+        y: initialPosition[1],
+        weight: bp.initialWeight // ArlindNocaj/Voronoi-Treemap-Library uses an epsilonesque initial weight; using heavier initial weights allows faster weight adjustements, hence faster stabilization
+      };
+    });
+  }
 
   function adapt(polygons, flickeringMitigationRatio) {
     var adaptedMapPoints;
@@ -435,52 +481,6 @@ export function voronoiMapSimulation(data) {
     }
   }
 
-  function initialize(data) {
-    var maxWeight = data.reduce(function (max, d) {
-        return Math.max(max, weight(d));
-      }, -Infinity),
-      minAllowedWeight = maxWeight * minWeightRatio;
-    var weights, mapPoints;
-
-    //begin: extract weights
-    weights = data.map(function (d, i, arr) {
-      return {
-        index: i,
-        weight: Math.max(weight(d), minAllowedWeight),
-        initialPosition: initialPosition(d, i, arr, weightedVoronoi),
-        initialWeight: initialWeight(d, i, arr, weightedVoronoi),
-        originalData: d
-      };
-    });
-    //end: extract weights
-
-    // create map-related points
-    // (with targetedArea, initial position and initialWeight)
-    mapPoints = createMapPoints(weights);
-    return weightedVoronoi(mapPoints);
-  }
-
-  function createMapPoints(basePoints) {
-    var totalWeight = basePoints.reduce(function (acc, bp) {
-      return (acc += bp.weight);
-    }, 0);
-    var initialPosition;
-
-    return basePoints.map(function (bp, i, bps) {
-      initialPosition = bp.initialPosition;
-
-      if (!d3PolygonContains(weightedVoronoi.clip(), initialPosition)) {
-        initialPosition = randomInitialPosition(bp, i, bps, weightedVoronoi);
-      }
-
-      return {
-        index: bp.index,
-        targetedArea: totalArea * bp.weight / totalWeight,
-        data: bp,
-        x: initialPosition[0],
-        y: initialPosition[1],
-        weight: bp.initialWeight // ArlindNocaj/Voronoi-Treemap-Library uses an epsilonesque initial weight; using heavier initial weights allows faster weight adjustements, hence faster stabilization
-      };
-    });
-  }
+  initializeSimulation();
+  return simulation;
 }
