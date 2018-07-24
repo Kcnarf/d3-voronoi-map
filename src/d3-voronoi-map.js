@@ -18,8 +18,8 @@ export function voronoiMap() {
   var DEFAULT_CONVERGENCE_RATIO = 0.01;
   var DEFAULT_MAX_ITERATION_COUNT = 50;
   var DEFAULT_MIN_WEIGHT_RATIO = 0.01;
-  var DEFAULT_INITIAL_POSITION = randomInitialPosition;
-  var DEFAULT_INITIAL_WEIGHT = halfAverageAreaInitialWeight;
+  var DEFAULT_INITIAL_POSITION = randomInitialPosition();
+  var DEFAULT_INITIAL_WEIGHT = halfAverageAreaInitialWeight();
   var epsilon = 1;
   //end: constants
 
@@ -415,7 +415,7 @@ export function voronoiMap() {
       initialPosition = bp.initialPosition;
 
       if (!d3PolygonContains(weightedVoronoi.clip(), initialPosition)) {
-        initialPosition = randomInitialPosition(bp, i, bps, _voronoiMap);
+        initialPosition = DEFAULT_INITIAL_POSITION(bp, i, bps, _voronoiMap);
       }
 
       return {
