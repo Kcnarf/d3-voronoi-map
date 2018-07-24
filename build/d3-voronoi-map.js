@@ -163,7 +163,7 @@
   var _halfIncircleRadius;
   //end: memoization for repeated usages
 
-  function pieInitialPosition (d, i, arr, voronoiMap) {
+  function pie (d, i, arr, voronoiMap) {
     var arrLength = arr.length;
     if (_clippingPolygon !== voronoiMap.clip()) {
       _clippingPolygon = voronoiMap.clip();
@@ -402,13 +402,7 @@
         return initialPosition;
       }
 
-      if (_ == 'random') {
-        initialPosition = randomInitialPosition;
-      } else if (_ == 'pie') {
-        initialPosition = pieInitialPosition;
-      } else {
-        initialPosition = _;
-      }
+      initialPosition = _;
       return _voronoiMap;
     };
 
@@ -668,6 +662,8 @@
   }
 
   exports.voronoiMap = voronoiMap;
+  exports.voronoiMapInitialPositionRandom = randomInitialPosition;
+  exports.voronoiMapInitialPositionPie = pie;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 

@@ -173,13 +173,7 @@ export function voronoiMap() {
       return initialPosition;
     }
 
-    if (_ == 'random') {
-      initialPosition = randomInitialPosition;
-    } else if (_ == 'pie') {
-      initialPosition = pieInitialPosition;
-    } else {
-      initialPosition = _;
-    }
+    initialPosition = _;
     return _voronoiMap;
   };
 
