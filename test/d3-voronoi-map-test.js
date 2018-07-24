@@ -131,6 +131,19 @@ tape("voronoiMap.minWeightRatio(...) should set the specified ratio", function (
 });
 
 tape("voronoiMap.initialPosition(...)", function (test) {
+  test.test("voronoiMap.initialPosition(...) should handle available intitial position policies", function (test) {
+    var voronoiMap = d3VoronoiMap.voronoiMap(),
+      randomInitialPosition = d3VoronoiMap.voronoiMap().initialPosition();
+
+    test.equal(voronoiMap.initialPosition('pie'), voronoiMap);
+    test.ok(voronoiMap.initialPosition() != randomInitialPosition);
+    // Testing if voronoiMap.initialPosition() == [function initialPositionPolicies/pie] should be better, but don't knwow how to do this ;-(
+
+    test.equal(voronoiMap.initialPosition('random'), voronoiMap);
+    test.equal(voronoiMap.initialPosition(), randomInitialPosition);
+    test.end();
+  });
+
   test.test("voronoiMap.initialPosition(...) should set the specified callback", function (test) {
     var voronoiMap = d3VoronoiMap.voronoiMap();
     var datum = {

@@ -10,6 +10,7 @@ import {
   FlickeringMitigation
 } from './flickering-mitigation';
 import randomInitialPosition from './initial-position-policies/random';
+import pieInitialPosition from './initial-position-policies/pie';
 import halfAverageAreaInitialWeight from './initial-weight-policies/half-average-area';
 
 export function voronoiMap() {
@@ -172,7 +173,13 @@ export function voronoiMap() {
       return initialPosition;
     }
 
-    initialPosition = _;
+    if (_ == 'random') {
+      initialPosition = randomInitialPosition;
+    } else if (_ == 'pie') {
+      initialPosition = pieInitialPosition;
+    } else {
+      initialPosition = _;
+    }
     return _voronoiMap;
   };
 

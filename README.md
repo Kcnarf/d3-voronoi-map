@@ -149,7 +149,7 @@ _minWeightRatio_ allows to mitigate flickerring behaviour (caused by too small w
 
 <a name="voronoiMap_initialPosition" href="#voronoiMap_initialPosition">#</a> <i>voronoiMap</i>.<b>initialPosition</b>([<i>initialPosition</i>])
 
-If _initialPosition_ is specified, sets the initial coordinate accessor. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the current d3-voronoi-map. The accessor must provide an array of two numbers `[x, y]` inside the clipping polygon, otherwise a random initial position is used instead. If _initialPosition_ is not specified, returns the current accessor, which defaults to a random position inside the clipping polygon:
+If _initialPosition_ is specified, sets the initial coordinate accessor. The accessor is either a predefined accessor, or a callback wich is passed the datum, its index, the array it comes from, and the current d3-voronoi-map. The accessor must provide an array of two numbers `[x, y]` inside the clipping polygon, otherwise a random initial position is used instead. If _initialPosition_ is not specified, returns the current accessor, which defaults to a random position inside the clipping polygon:
 
 ```js
 function randomInitialPosition(d, i, arr, voronoiMap) {
@@ -181,7 +181,12 @@ function precomputedInitialPosition(d, i, arr, voronoiMap) {
 }
 ```
 
-Considering the same set of data, severall Voronoï map computations lead to disctinct final arrangements, due to the default random initial position of sites. If _initialPosition_ is a callback producing repeatable results, then several computations produce the same final arrangement. This is useful if you want the same arrangement for distinct page loads/reloads.
+Furthermore, two predefined policies are available:
+
+- the random policy (which uses the already mentioned random accessor) available through `voroimap.intialPosition("random")`
+- the pie-based policy, available through `voroimap.intialPosition("pie")`; with this policy, initial positions of data are equaly distributed along an inner circle of the clipping polygon, the first datum at 0° (i.e. at right), in a counterclockwise fashion (inverse your data to have the clockwise counterpart); it's name comes from the very first iteration which looks like a pie; this policy produces repeatable results
+
+Considering the same set of data, severall Voronoï map computations lead to disctinct final arrangements, due to the default random initial position of sites. If _initialPosition_ is a callback producing repeatable results or if it uses the `pie` policy, then several computations produce the same final arrangement. This is useful if you want the same arrangement for distinct page loads/reloads.
 
 <a name="voronoiMap_initialWeight" href="#voronoiMap_initialWeight">#</a> <i>voronoiMap</i>.<b>initialWeight</b>([<i>initialWeight</i>])
 

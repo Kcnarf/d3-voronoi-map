@@ -2,6 +2,7 @@
 build/*.zip
 build/flickering-mitigation.js
 build/initial-position-policies/random.js
+build/initial-position-policies/pie.js
 build/initial-weight-policies/half-average-area.js
 node_modules
 npm-debug.log
