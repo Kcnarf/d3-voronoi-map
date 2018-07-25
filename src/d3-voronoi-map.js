@@ -17,6 +17,7 @@ import {
   FlickeringMitigation
 } from './flickering-mitigation';
 import randomInitialPosition from './initial-position-policies/random';
+import pieInitialPosition from './initial-position-policies/pie';
 import halfAverageAreaInitialWeight from './initial-weight-policies/half-average-area';
 
 export function voronoiMapSimulation(data) {
@@ -24,8 +25,8 @@ export function voronoiMapSimulation(data) {
   var DEFAULT_CONVERGENCE_RATIO = 0.01;
   var DEFAULT_MAX_ITERATION_COUNT = 50;
   var DEFAULT_MIN_WEIGHT_RATIO = 0.01;
-  var DEFAULT_INITIAL_POSITION = randomInitialPosition;
-  var DEFAULT_INITIAL_WEIGHT = halfAverageAreaInitialWeight;
+  var DEFAULT_INITIAL_POSITION = randomInitialPosition();
+  var DEFAULT_INITIAL_WEIGHT = halfAverageAreaInitialWeight();
   var epsilon = 1;
   //end: constants
 
@@ -277,7 +278,7 @@ export function voronoiMapSimulation(data) {
       initialPosition = bp.initialPosition;
 
       if (!d3PolygonContains(weightedVoronoi.clip(), initialPosition)) {
-        initialPosition = randomInitialPosition(bp, i, bps, simulation);
+        initialPosition = DEFAULT_INITIAL_POSITION(bp, i, bps, simulation);
       }
 
       return {

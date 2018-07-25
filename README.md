@@ -194,60 +194,38 @@ _minWeightRatio_ allows to mitigate flickerring behaviour (caused by too small w
 
 <a name="simulation_initialPosition" href="#simulation_initialPosition">#</a> <i>simulation</i>.<b>initialPosition</b>([<i>initialPosition</i>])
 
-If _initialPosition_ is specified, sets the initial coordinate accessor. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the _simulation_. The accessor must provide an array of two numbers `[x, y]` inside the clipping polygon, otherwise a random initial position is used instead. If _initialPosition_ is not specified, returns the current accessor, which defaults to a random position inside the clipping polygon:
+If _initialPosition_ is specified, sets the initial coordinate accessor. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the current _simulation_. The accessor must provide an array of two numbers `[x, y]` inside the clipping polygon, otherwise a random initial position is used instead. If _initialPosition_ is not specified, returns the current accessor, which defaults to a random position policy which insure to randomly pick a point inside the clipping polygon.
+
+A custom accessor may look like:
 
 ```js
-function randomInitialPosition(d, i, arr, weightedVoronoi) {
-  var clippingPolygon = weightedVoronoi.clip(),
-    extent = weightedVoronoi.extent(),
-    minX = extent[0][0],
-    maxX = extent[1][0],
-    minY = extent[0][1],
-    maxY = extent[1][1],
-    dx = maxX - minX,
-    dy = maxY - minY;
-  var x, y;
-
-  x = minX + dx * Math.random();
-  y = minY + dy * Math.random();
-  while (!polygonContains(clippingPolygon, [x, y])) {
-    x = minX + dx * Math.random();
-    y = minY + dy * Math.random();
-  }
-  return [x, y];
-}
-```
-
-Above is a quite complex accessor that uses the _simulation_'s API to ensure that sites are positioned inside the clipping polygon, but the accessor may be simpler (-:
-
-```js
-function precomputedInitialPosition(d, i, arr, weightedVoronoi) {
+function precomputedInitialPosition(d, i, arr, simulation) {
   return [d.precomputedX, d.precomputedY];
 }
 ```
 
 Considering the same set of data, severall Voronoï map simulations lead to disctinct final arrangements, due to the default random initial position of sites. If _initialPosition_ is a callback producing repeatable outputs, then several simulations produce the same final arrangement. This is useful if you want the same arrangement for distinct page loads/reloads.
 
-<a name="simulation_initialWeight" href="#simulation_initialWeight">#</a> <i>simulation</i>.<b>initialWeight</b>([<i>initialWeight</i>])
+Furthermore, two predefined policies are available:
 
-If _initialWeight_ is specified, sets the initial weight accessor. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the current _simulation_. The accessor must provide a positive amount. If _initialWeight_ is not specified, returns the current accessor, which defaults to initialize all sites with the same amount (which depends on the clipping polygon and the number of data):
+- the random policy, available through `d3.voronoiMapInitialPositionRandom()`, which is the default intital position policy;
+- the pie-based policy, available through `d3.voronoiMapInitialPositionPie()` which initializes positions of data along an inner circle of the clipping polygon, in an equaly distributed counterclockwise way (reverse your data to have a clockwise counterpart); the first datum is positioned at 0 radian (i.e. at right), but this can be customized through the `d3.voronoiMapInitialPositionPie().startAngle(<yourFavoriteAngleInRad>)` API; the name of this policy comes from the very first iteration which looks like a pie; this policy produces repeatable results, and hence same Voronoï map for several page laods/reloads.
 
-```js
-function halfAverageAreaInitialWeight(d, i, arr, weightedVoronoi) {
-  var siteCount = arr.length,
-    totalArea = d3PolygonArea(weightedVoronoi.clip());
+You can take a look at these policies to define complex initial position policies/accessors.
 
-  return totalArea / siteCount / 2; // half of the average area of the the clipping polygon
-}
-```
+<a name="voronoiMap_initialWeight" href="#voronoiMap_initialWeight">#</a> <i>voronoiMap</i>.<b>initialWeight</b>([<i>initialWeight</i>])
 
-Above is a quite complex accessor that uses the _simulation_'s API that sets the same weight for all sites, but the accessor may be simpler (-:
+If _initialWeight_ is specified, sets the initial weight accessor. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the current _simulation. The accessor must provide a positive amount. If \_initialWeight_ is not specified, returns the current accessor, which defaults to initialize all sites with the same amount (which depends on the clipping polygon and the number of data):
+
+A custom accessor may look like:
 
 ```js
-function precomputedInitialWeight(d, i, arr, weightedVoronoi) {
+function precomputedInitialWeight(d, i, arr, simulation) {
   return d.precomputedWeight;
 }
 ```
+
+Furthermore, the default half average area policy is available through `d3.voronoiMapInitialWeightHalfAverageArea()`.
 
 Considering a unique clipping polygon where you want to animate the same data but with slightly different weights (e.g., animate according to the time), this API combined with the [_initialPosition_](#simulation_initialPosition) API allows you to maintain areas from one set to another:
 

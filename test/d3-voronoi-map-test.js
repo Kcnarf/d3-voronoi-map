@@ -186,7 +186,7 @@ tape("voronoiMapSimulation.initialPosition(...)", function (test) {
     test.end();
   });
 
-  test.test("voronoiMapSimulation.initialPosition(...) should fallback to a random position if specified callback retruns unexpected results", function (test) {
+  test.test("voronoiMapSimulation.initialPosition(...) should fallback to a random position if specified callback returns unexpected results", function (test) {
     var datum = {
         weight: 1,
         precomputedX: 2,
@@ -316,4 +316,10 @@ tape("voronoiMapSimulation.state() should reflect inner state of the simulation"
       },
       voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).on('tick', onTick).on('end', onEnd);
   });
+});
+
+tape.test("voronoiMapSimulation should provide available intitial position policies", function (test) {
+  test.equal(typeof d3VoronoiMap.voronoiMapInitialPositionRandom, 'function');
+  test.equal(typeof d3VoronoiMap.voronoiMapInitialPositionPie, 'function');
+  test.end();
 });
