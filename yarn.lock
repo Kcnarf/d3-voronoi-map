@@ -82,9 +82,9 @@ d3-timer@1.0.7:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-1.0.7.tgz#df9650ca587f6c96607ff4e60cc38229e8dd8531"
 
-d3-weighted-voronoi@0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/d3-weighted-voronoi/-/d3-weighted-voronoi-0.0.3.tgz#95bb082c0cd54ded7af6cb4f7d014b8a2a2a6d3e"
+d3-weighted-voronoi@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/d3-weighted-voronoi/-/d3-weighted-voronoi-1.0.0.tgz#03ae86bf3202d09186ab3f69a4dc975350c5962c"
   dependencies:
     d3-array "1.2.0"
     d3-polygon "1.0.3"
