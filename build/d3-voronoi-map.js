@@ -221,9 +221,11 @@
         updateInternals();
       }
 
+      // add some randomness to prevent colinear/cocircular points
+      // substract -0.5 so that the average jitter is still zero
       return [
-        clippingPolygonCentroid[0] + Math.cos(startAngle + i * angleBetweenData) * halfIncircleRadius + Math.random() * 1E-3, //add some randomness to prevent colinearity between PI-separated points
-        clippingPolygonCentroid[1] + Math.sin(startAngle + i * angleBetweenData) * halfIncircleRadius + Math.random() * 1E-3 //add some randomness to prevent colinearity between PI-separated points
+        clippingPolygonCentroid[0] + Math.cos(startAngle + i * angleBetweenData) * halfIncircleRadius + (Math.random() - 0.5) * 1E-3,
+        clippingPolygonCentroid[1] + Math.sin(startAngle + i * angleBetweenData) * halfIncircleRadius + (Math.random() - 0.5) * 1E-3
       ];
     };
 
