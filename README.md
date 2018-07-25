@@ -180,9 +180,7 @@ function precomputedInitialWeight(d, i, arr, voronoiMap) {
 }
 ```
 
-Furthermore, one predefined policy is available:
-
-- the half average area policy, available through `d3.voronoiMapInitialWeightHalfAverageArea()`, which is the default intital position policy;
+Furthermore, the default half average area policy is available through `d3.voronoiMapInitialWeightHalfAverageArea()`.
 
 Considering a unique clipping polygon where you want to animate the same data but with slightly different weights (e.g., animate according to the time), this API combined with the [_initialPosition_](#voronoiMap_initialPosition) API allows you to maintain areas from one set to another:
 
