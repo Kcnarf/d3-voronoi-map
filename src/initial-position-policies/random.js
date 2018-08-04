@@ -1,6 +1,7 @@
 import {
   polygonContains as d3PolygonContains
 } from 'd3-polygon';
+import SeedRandomHelper from './seed-random-helper';
 
 export default function () {
 
@@ -30,11 +31,11 @@ export default function () {
       updateInternals();
     }
 
-    x = minX + dx * Math.random();
-    y = minY + dy * Math.random();
+    x = minX + dx * SeedRandomHelper.random();
+    y = minY + dy * SeedRandomHelper.random();
     while (!d3PolygonContains(clippingPolygon, [x, y])) {
-      x = minX + dx * Math.random();
-      y = minY + dy * Math.random();
+      x = minX + dx * SeedRandomHelper.random();
+      y = minY + dy * SeedRandomHelper.random();
     }
     return [x, y];
   };
