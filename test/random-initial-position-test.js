@@ -1,5 +1,6 @@
 var tape = require("tape"),
   d3VoronoiMapInitialPositionRandom = require("../build/initial-position-policies/random"),
+  seedRandomHelper = require("../build/initial-position-policies/seed-random-helper"),
   d3VoronoiMap = require("../build/d3-voronoi-map");
 
 tape("initial-position-policies/pie()(...) default test", function (test) {
@@ -14,6 +15,24 @@ tape("initial-position-policies/pie()(...) default test", function (test) {
   test.ok(initCoords[0] < 1);
   test.ok(initCoords[1] > 0);
   test.ok(initCoords[1] < 1);
+
+  test.end();
+});
+
+tape("initial-position-policies/random(...) should have the same result when seed is set", function (test) {
+
+  seedRandomHelper.seed(10);
+  test.equal(Math.round(seedRandomHelper.random() * 10000), 2790);
+  test.equal(Math.round(seedRandomHelper.random() * 10000), 1975);
+
+  var initialPositionRandom = d3VoronoiMapInitialPositionRandom();
+  var voronoiMap = d3VoronoiMap.voronoiMap();
+  var data = [{weight: 1}];
+  seedRandomHelper.seed(10);
+  var initCoords = initialPositionRandom(data[0], 0, data, voronoiMap);
+
+  test.equal(Math.round(initCoords[0] * 10000), 807);
+  test.equal(Math.round(initCoords[1] * 10000), 3269);
 
   test.end();
 });

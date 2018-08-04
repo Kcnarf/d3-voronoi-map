@@ -24,7 +24,7 @@
   },
   "scripts": {
     "build": "rm -rf build && mkdir build && rollup -c ./rollup.config.js",
-    "pretest": "yarn run build && rollup -f umd -n vanilla --o build/flickering-mitigation.js -- ./src/flickering-mitigation.js && rollup -f umd -n vanilla --o build/initial-weight-policies/half-average-area.js -- ./src/initial-weight-policies/half-average-area.js && rollup -f umd -n vanilla --o build/initial-position-policies/random.js -- ./src/initial-position-policies/random.js && rollup -f umd -n vanilla --o build/initial-position-policies/pie.js -- ./src/initial-position-policies/pie.js",
+    "pretest": "yarn run build && rollup -f umd -n vanilla --o build/flickering-mitigation.js -- ./src/flickering-mitigation.js && rollup -f umd -n vanilla --o build/initial-weight-policies/half-average-area.js -- ./src/initial-weight-policies/half-average-area.js && rollup -f umd -n vanilla --o build/initial-position-policies/random.js -- ./src/initial-position-policies/random.js && rollup -f umd -n vanilla --o build/initial-position-policies/seed-random-helper.js -- ./src/initial-position-policies/seed-random-helper.js && rollup -f umd -n vanilla --o build/initial-position-policies/pie.js -- ./src/initial-position-policies/pie.js",
     "test": "tape 'test/**/*-test.js'",
     "precommit": "yarn run test && uglifyjs build/d3-voronoi-map.js -c -m -o build/d3-voronoi-map.min.js",
     "preversion": "yarn run precommit && zip -j build/d3-voronoi-map.zip -- LICENSE README.md build/d3-voronoi-map.js build/d3-voronoi-map.min.js"
