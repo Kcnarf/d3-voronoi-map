@@ -148,6 +148,7 @@
         return {
             seed: function(i) {
                 m_w = i;
+                m_z = 987654321;
             },
 
             random: function()
@@ -803,6 +804,7 @@
 
     exports.voronoiMap = voronoiMap;
     exports.voronoiMapInitialPositionRandom = randomInitialPosition;
+    exports.voronoiMapInitialPositionRandomSeed = SeedRandomHelper$1;
     exports.voronoiMapInitialPositionPie = pie;
 
     Object.defineProperty(exports, '__esModule', { value: true });

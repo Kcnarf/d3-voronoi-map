@@ -22,17 +22,16 @@ tape("initial-position-policies/pie()(...) default test", function (test) {
 tape("initial-position-policies/random(...) should have the same result when seed is set", function (test) {
 
   seedRandomHelper.seed(10);
-  test.equal(Math.round(seedRandomHelper.random() * 10000), 2790);
-  test.equal(Math.round(seedRandomHelper.random() * 10000), 1975);
+  test.equal(Math.round(seedRandomHelper.random() * 10000), 2323);
+  test.equal(Math.round(seedRandomHelper.random() * 10000), 7631);
 
   var initialPositionRandom = d3VoronoiMapInitialPositionRandom();
   var voronoiMap = d3VoronoiMap.voronoiMap();
   var data = [{weight: 1}];
-  seedRandomHelper.seed(10);
   var initCoords = initialPositionRandom(data[0], 0, data, voronoiMap);
 
-  test.equal(Math.round(initCoords[0] * 10000), 807);
-  test.equal(Math.round(initCoords[1] * 10000), 3269);
+  test.equal(Math.round(initCoords[0] * 10000), 4528);
+  test.equal(Math.round(initCoords[1] * 10000), 8814);
 
   test.end();
 });

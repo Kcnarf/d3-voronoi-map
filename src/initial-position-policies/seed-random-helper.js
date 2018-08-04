@@ -9,6 +9,7 @@ const SeedRandomHelper = function() {
     return {
         seed: function(i) {
             m_w = i;
+            m_z = 987654321;
         },
 
         random: function()
