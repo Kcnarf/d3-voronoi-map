@@ -22,6 +22,7 @@ tape("voronoiMap(...) should set the expected defaults", function (test) {
     [1, 1]
   ]);
   test.deepEqual(voronoiMap.size(), [1, 1]);
+  test.equal(voronoiMap.rng(), Math.random);
   test.end();
 });
 
@@ -130,6 +131,17 @@ tape("voronoiMap.minWeightRatio(...) should set the specified ratio", function (
   test.end();
 });
 
+tape("voronoiMap.rng(...) should set the specified random number generator", function (test) {
+  var voronoiMap = d3VoronoiMap.voronoiMap();
+  var myrng = function () {
+    return Math.random;
+  }
+
+  test.equal(voronoiMap.rng(myrng), voronoiMap);
+  test.equal(voronoiMap.rng(), myrng);
+  test.end();
+});
+
 tape("voronoiMap.initialPosition(...)", function (test) {
   test.test("voronoiMap.initialPosition(...) should set the specified callback", function (test) {
     var voronoiMap = d3VoronoiMap.voronoiMap();
@@ -148,12 +160,12 @@ tape("voronoiMap.initialPosition(...)", function (test) {
     test.end();
   });
 
-  test.test("voronoiMap.initialPosition(...) should fallback to a random position if specified callback retruns a position ouside the clipping polygon", function (test) {
+  test.test("voronoiMap.initialPosition(...) should fallback to a random position if specified callback returns a position ouside the clipping polygon", function (test) {
     var voronoiMap = d3VoronoiMap.voronoiMap(),
       data = [{
         weight: 1,
         precomputedX: 2,
-        precomputedX: 3
+        precomputedY: 3
       }],
       newAccessor = function (d, i, arr, clippingPolygon) {
         return [d.precomputedX, d.precomputedY];
@@ -169,7 +181,7 @@ tape("voronoiMap.initialPosition(...)", function (test) {
     test.end();
   });
 
-  test.test("voronoiMap.initialPosition(...) should fallback to a random position if specified callback retruns unexpected results", function (test) {
+  test.test("voronoiMap.initialPosition(...) should fallback to a random position if specified callback returns unexpected results", function (test) {
     var voronoiMap = d3VoronoiMap.voronoiMap(),
       data = [{
         weight: 1,

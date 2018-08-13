@@ -30,11 +30,11 @@ export default function () {
       updateInternals();
     }
 
-    x = minX + dx * Math.random();
-    y = minY + dy * Math.random();
+    x = minX + dx * voronoiMap.rng()();
+    y = minY + dy * voronoiMap.rng()();
     while (!d3PolygonContains(clippingPolygon, [x, y])) {
-      x = minX + dx * Math.random();
-      y = minY + dy * Math.random();
+      x = minX + dx * voronoiMap.rng()();
+      y = minY + dy * voronoiMap.rng()();
     }
     return [x, y];
   };

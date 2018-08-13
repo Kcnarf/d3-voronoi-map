@@ -147,6 +147,22 @@ var minWeightRatio = 0.01; // 1% of maxWeight
 
 _minWeightRatio_ allows to mitigate flickerring behaviour (caused by too small weights), and enhances user interaction by not computing near-empty cells.
 
+<a name="voronoiMap_rng" href="#voronoiMap_rng">#</a> <i>voronoiMap</i>.<b>rng</b>([<i>rng</i>])
+
+If _rng_ is specified, sets the random number generator which is used when randomness is required (e.g. in `d3.voronoiMapInitialPositionRandom()`, cf. [_initialPosition_](#voronoiMap_initialPosition)). The given random number generator must implement the same interface as `Math.random` and must only return values in the range [0, 1). If _rng_ is not specified, returns the current _rng_ , which defaults to `Math.random`.
+
+Considering the same set of data, severall Voronoï map computations lead to disctinct final arrangements, due to the non-seedable `Math.random` default number generator. If _rng_ is set to a _seedable_ random number generator which produces repeatable results, then several computations will produce the exact same final arrangement. This is useful if you want the same arrangement for distinct page loads/reloads. For example, using [seedrandom](https://github.com/davidbau/seedrandom):
+
+```js
+<script src="//cdnjs.cloudflare.com/ajax/libs/seedrandom/2.4.3/lib/alea.min.js"></script>
+<script>
+  var myseededrng = new Math.seedrandom('my seed'); // (from seedrandom's doc) Use "new" to create a local prng without altering Math.random
+  voronoiMap.rng(myseededrng);
+</script>
+```
+
+You can also take a look at [d3-random](https://github.com/d3/d3-random) for random number generator from other-than-uniform distributions.
+
 <a name="voronoiMap_initialPosition" href="#voronoiMap_initialPosition">#</a> <i>voronoiMap</i>.<b>initialPosition</b>([<i>initialPosition</i>])
 
 If _initialPosition_ is specified, sets the initial coordinate accessor. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the current d3-voronoi-map. The accessor must provide an array of two numbers `[x, y]` inside the clipping polygon, otherwise a random initial position is used instead. If _initialPosition_ is not specified, returns the current accessor, which defaults to a random position policy which insure to randomly pick a point inside the clipping polygon.
@@ -159,14 +175,12 @@ function precomputedInitialPosition(d, i, arr, voronoiMap) {
 }
 ```
 
-Considering the same set of data, severall Voronoï map computations lead to disctinct final arrangements, due to the default random initial position of sites. If _initialPosition_ is a callback producing repeatable results or if it uses the `pie` policy, then several computations produce the same final arrangement. This is useful if you want the same arrangement for distinct page loads/reloads.
-
 Furthermore, two predefined policies are available:
 
-- the random policy, available through `d3.voronoiMapInitialPositionRandom()`, which is the default intital position policy;
-- the pie-based policy, available through `d3.voronoiMapInitialPositionPie()` which initializes positions of data along an inner circle of the clipping polygon, in an equaly distributed counterclockwise way (reverse your data to have a clockwise counterpart); the first datum is positioned at 0 radian (i.e. at right), but this can be customized through the `d3.voronoiMapInitialPositionPie().startAngle(<yourFavoriteAngleInRad>)` API; the name of this policy comes from the very first iteration which looks like a pie; this policy produces repeatable results, and hence repeatable Voronoï map for several page laods/reloads.
+- the random policy, available through `d3.voronoiMapInitialPositionRandom()`, which is the default intital position policy; it uses the specified [_rng_](#voronoiMap_rng), and may produce repeatable arrangement if a seeded random number generator is defined;
+- the pie-based policy, available through `d3.voronoiMapInitialPositionPie()` which initializes positions of data along an inner circle of the clipping polygon, in an equaly distributed counterclockwise way (reverse your data to have a clockwise counterpart); the first datum is positioned at 0 radian (i.e. at right), but this can be customized through the `d3.voronoiMapInitialPositionPie().startAngle(<yourFavoriteAngleInRad>)` API; the name of this policy comes from the very first iteration which looks like a pie;
 
-You can take a look at these policies to define complex initial position policies/accessors.
+You can take a look at these policies to define your own complex initial position policies/accessors.
 
 <a name="voronoiMap_initialWeight" href="#voronoiMap_initialWeight">#</a> <i>voronoiMap</i>.<b>initialWeight</b>([<i>initialWeight</i>])
 
