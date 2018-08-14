@@ -224,8 +224,8 @@
       // add some randomness to prevent colinear/cocircular points
       // substract -0.5 so that the average jitter is still zero
       return [
-        clippingPolygonCentroid[0] + Math.cos(startAngle + i * angleBetweenData) * halfIncircleRadius + (Math.random() - 0.5) * 1E-3,
-        clippingPolygonCentroid[1] + Math.sin(startAngle + i * angleBetweenData) * halfIncircleRadius + (Math.random() - 0.5) * 1E-3
+        clippingPolygonCentroid[0] + Math.cos(startAngle + i * angleBetweenData) * halfIncircleRadius + (voronoiMap.prng()() - 0.5) * 1E-3,
+        clippingPolygonCentroid[1] + Math.sin(startAngle + i * angleBetweenData) * halfIncircleRadius + (voronoiMap.prng()() - 0.5) * 1E-3
       ];
     };
 

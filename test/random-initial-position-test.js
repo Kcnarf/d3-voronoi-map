@@ -67,8 +67,8 @@ tape("initial-position-policies/randomPolicy(...) should handle clipping polygon
   test.end();
 });
 
-tape("initial-position-policies/randomPolicy(...) should depend on prng", function (test) {
-  var myprng = function () { // not random but do the trick for the test
+tape("initial-position-policies/randomPolicy(...) should use expected prng", function (test) {
+  var myprng = function () { // not a prng, but do the trick for the test!
     var memo = 0;
     return function () {
       memo += .1;

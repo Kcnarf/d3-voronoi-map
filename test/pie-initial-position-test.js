@@ -77,7 +77,7 @@ tape("initial-position-policies/piePolicy()(...) should depends on startAngle", 
   test.end();
 });
 
-tape("initial-position-policies/piePolicy(...) should depends on clipping polygon", function (test) {
+tape("initial-position-policies/piePolicy()(...) should depends on clipping polygon", function (test) {
   var initialPositionPie = d3VoronoiMapInitialPositionPie(),
     voronoiMap = d3VoronoiMap.voronoiMap().size([2, 3]),
     data = [{
@@ -107,7 +107,7 @@ tape("initial-position-policies/piePolicy(...) should depends on clipping polygo
   test.end();
 });
 
-tape("initial-position-policies/piePolicy(...) should handle irregular polygon", function (test) {
+tape("initial-position-policies/piePolicy()(...) should handle irregular polygon", function (test) {
   var initialPositionPie = d3VoronoiMapInitialPositionPie(),
     voronoiMap = d3VoronoiMap.voronoiMap().clip([
       [1, 0],
@@ -144,7 +144,7 @@ tape("initial-position-policies/piePolicy(...) should handle irregular polygon",
   test.end();
 });
 
-tape("initial-position-policies/piePolicy(...) should handle clipping polygon updates", function (test) {
+tape("initial-position-policies/piePolicy()(...) should handle clipping polygon updates", function (test) {
   var initialPositionPie = d3VoronoiMapInitialPositionPie(),
     voronoiMap = d3VoronoiMap.voronoiMap(),
     data = [{
@@ -189,7 +189,7 @@ tape("initial-position-policies/piePolicy(...) should handle clipping polygon up
   test.end();
 });
 
-tape("initial-position-policies/piePolicy(...) should depend on number of data", function (test) {
+tape("initial-position-policies/piePolicy()(...) should depend on number of data", function (test) {
   var initialPositionPie = d3VoronoiMapInitialPositionPie(),
     voronoiMap = d3VoronoiMap.voronoiMap(),
     data = [{
@@ -216,7 +216,7 @@ tape("initial-position-policies/piePolicy(...) should depend on number of data",
   test.end();
 });
 
-tape("initial-position-policies/piePolicy(...) should handle data of length 1", function (test) {
+tape("initial-position-policies/piePolicy()(...) should handle data of length 1", function (test) {
   var initialPositionPie = d3VoronoiMapInitialPositionPie(),
     voronoiMap = d3VoronoiMap.voronoiMap(),
     data = [{
@@ -232,5 +232,36 @@ tape("initial-position-policies/piePolicy(...) should handle data of length 1", 
   test.ok(initCoords[0] < expectedInitCoords[0][0] + 1E-3);
   test.ok(initCoords[1] > expectedInitCoords[0][1] - 1E-3);
   test.ok(initCoords[1] < expectedInitCoords[0][1] + 1E-3);
+  test.end();
+});
+
+tape("initial-position-policies/piePolicy()(...) should use expected prng", function (test) {
+  var initialPositionPie = d3VoronoiMapInitialPositionPie(),
+    voronoiMap = d3VoronoiMap.voronoiMap().prng(function () {
+      return 1; // not a prng, but do the trick for the test!
+    }),
+    data = [{
+      weight: 1
+    }, {
+      weight: 1
+    }, {
+      weight: 1
+    }, {
+      weight: 1
+    }];
+  var expectedInitCoords = [
+      [0.5 + .25, 0.5],
+      [0.5, 0.5 + .25],
+      [0.5 - .25, 0.5],
+      [0.5, 0.5 - 0.25]
+    ],
+    prngDelta = (voronoiMap.prng()() - 0.5) * 1E-3; // from src code
+  var initCoords;
+
+  data.forEach(function (d, i) {
+    initCoords = initialPositionPie(d, i, data, voronoiMap);
+    test.equal(initCoords[0], expectedInitCoords[i][0] + prngDelta);
+    test.equal(initCoords[1], expectedInitCoords[i][1] + prngDelta);
+  })
   test.end();
 });
