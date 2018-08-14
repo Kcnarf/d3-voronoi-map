@@ -165,11 +165,11 @@
         updateInternals();
       }
 
-      x = minX + dx * Math.random();
-      y = minY + dy * Math.random();
+      x = minX + dx * voronoiMapSimulation.prng()();
+      y = minY + dy * voronoiMapSimulation.prng()();
       while (!d3Polygon.polygonContains(clippingPolygon, [x, y])) {
-        x = minX + dx * Math.random();
-        y = minY + dy * Math.random();
+        x = minX + dx * voronoiMapSimulation.prng()();
+        y = minY + dy * voronoiMapSimulation.prng()();
       }
       return [x, y];
     };
@@ -205,11 +205,11 @@
     ///////// API /////////
     ///////////////////////
 
-    function _pie(d, i, arr, voronoiMap) {
+    function _pie(d, i, arr, voronoiMapSimulation) {
       var shouldUpdateInternals = false;
 
-      if (clippingPolygon !== voronoiMap.clip()) {
-        clippingPolygon = voronoiMap.clip();
+      if (clippingPolygon !== voronoiMapSimulation.clip()) {
+        clippingPolygon = voronoiMapSimulation.clip();
         shouldUpdateInternals |= true;
       }
       if (dataArray !== arr) {
@@ -224,8 +224,8 @@
       // add some randomness to prevent colinear/cocircular points
       // substract -0.5 so that the average jitter is still zero
       return [
-        clippingPolygonCentroid[0] + Math.cos(startAngle + i * angleBetweenData) * halfIncircleRadius + (Math.random() - 0.5) * 1E-3,
-        clippingPolygonCentroid[1] + Math.sin(startAngle + i * angleBetweenData) * halfIncircleRadius + (Math.random() - 0.5) * 1E-3
+        clippingPolygonCentroid[0] + Math.cos(startAngle + i * angleBetweenData) * halfIncircleRadius + (voronoiMapSimulation.prng()() - 0.5) * 1E-3,
+        clippingPolygonCentroid[1] + Math.sin(startAngle + i * angleBetweenData) * halfIncircleRadius + (voronoiMapSimulation.prng()() - 0.5) * 1E-3
       ];
     };
 
@@ -357,8 +357,10 @@
     var DEFAULT_CONVERGENCE_RATIO = 0.01;
     var DEFAULT_MAX_ITERATION_COUNT = 50;
     var DEFAULT_MIN_WEIGHT_RATIO = 0.01;
+    var DEFAULT_PRNG = Math.random;
     var DEFAULT_INITIAL_POSITION = randomInitialPosition();
     var DEFAULT_INITIAL_WEIGHT = halfAverageAreaInitialWeight();
+    var RANDOM_INITIAL_POSITION = randomInitialPosition();
     var epsilon = 1;
     //end: constants
 
@@ -369,6 +371,7 @@
     var convergenceRatio = DEFAULT_CONVERGENCE_RATIO; // targeted allowed error ratio; default 0.01 stops computation when cell areas error <= 1% clipping polygon's area
     var maxIterationCount = DEFAULT_MAX_ITERATION_COUNT; // maximum allowed iteration; stops computation even if convergence is not reached; use a large amount for a sole converge-based computation stop
     var minWeightRatio = DEFAULT_MIN_WEIGHT_RATIO; // used to compute the minimum allowed weight; default 0.01 means 1% of max weight; handle near-zero weights, and leaves enought space for cell hovering
+    var prng = DEFAULT_PRNG; // pseudorandom number generator
     var initialPosition = DEFAULT_INITIAL_POSITION; // accessor to the initial position; defaults to a random position inside the clipping polygon
     var initialWeight = DEFAULT_INITIAL_WEIGHT; // accessor to the initial weight; defaults to the average area of the clipping polygon
 
@@ -487,6 +490,16 @@
         }
 
         weightedVoronoi.size(_);
+        initializeSimulation();
+        return simulation;
+      },
+
+      prng: function (_) {
+        if (!arguments.length) {
+          return prng;
+        }
+
+        prng = _;
         initializeSimulation();
         return simulation;
       },

@@ -19,11 +19,11 @@ export default function () {
   ///////// API /////////
   ///////////////////////
 
-  function _pie(d, i, arr, voronoiMap) {
+  function _pie(d, i, arr, voronoiMapSimulation) {
     var shouldUpdateInternals = false;
 
-    if (clippingPolygon !== voronoiMap.clip()) {
-      clippingPolygon = voronoiMap.clip();
+    if (clippingPolygon !== voronoiMapSimulation.clip()) {
+      clippingPolygon = voronoiMapSimulation.clip();
       shouldUpdateInternals |= true;
     }
     if (dataArray !== arr) {
@@ -38,8 +38,8 @@ export default function () {
     // add some randomness to prevent colinear/cocircular points
     // substract -0.5 so that the average jitter is still zero
     return [
-      clippingPolygonCentroid[0] + Math.cos(startAngle + i * angleBetweenData) * halfIncircleRadius + (Math.random() - 0.5) * 1E-3,
-      clippingPolygonCentroid[1] + Math.sin(startAngle + i * angleBetweenData) * halfIncircleRadius + (Math.random() - 0.5) * 1E-3
+      clippingPolygonCentroid[0] + Math.cos(startAngle + i * angleBetweenData) * halfIncircleRadius + (voronoiMapSimulation.prng()() - 0.5) * 1E-3,
+      clippingPolygonCentroid[1] + Math.sin(startAngle + i * angleBetweenData) * halfIncircleRadius + (voronoiMapSimulation.prng()() - 0.5) * 1E-3
     ];
   };
 

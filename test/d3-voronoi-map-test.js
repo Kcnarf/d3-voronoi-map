@@ -17,6 +17,7 @@ tape("voronoiMapSimulation(...) should set the expected defaults", function (tes
     [1, 1],
     [1, 0]
   ]);
+  test.equal(voronoiMapSimulation.prng(), Math.random);
   test.equal(voronoiMapSimulation.on('tick'), undefined);
   test.equal(voronoiMapSimulation.on('end'), undefined);
   test.end();
@@ -145,8 +146,21 @@ tape("voronoiMapSimulation.minWeightRatio(...) should set the specified ratio", 
   test.end();
 });
 
-tape("voronoiMapSimulation.initialPosition(...)", function (test) {
+tape("voronoiMapSimulation.prng(...) should set the specified pseudorandom number generator", function (test) {
+  const datum = {
+      weight: 1
+    },
+    voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).stop();
+  var myprng = function () {
+    return Math.random();
+  }
 
+  test.equal(voronoiMapSimulation.prng(myprng), voronoiMapSimulation);
+  test.equal(voronoiMapSimulation.prng(), myprng);
+  test.end();
+});
+
+tape("voronoiMapSimulation.initialPosition(...)", function (test) {
   test.test("voronoiMapSimulation.initialPosition(...) should set the specified callback", function (test) {
     const datum = {
         weight: 1,
@@ -164,7 +178,7 @@ tape("voronoiMapSimulation.initialPosition(...)", function (test) {
     test.end();
   });
 
-  test.test("voronoiMapSimulation.initialPosition(...) should fallback to a random position if specified callback retruns a position ouside the clipping polygon", function (test) {
+  test.test("voronoiMapSimulation.initialPosition(...) should fallback to a random position if specified callback returns a position ouside the clipping polygon", function (test) {
     const datum = {
         weight: 1,
         precomputedX: 2,
