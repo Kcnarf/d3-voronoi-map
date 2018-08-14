@@ -44,10 +44,10 @@ In your javascript, in order to define the tessellation:
 
 ```javascript
 var voronoiMap = d3.voronoiMap()
-  .weight(function(d){ return weightScale(d); }         // set the weight accessor
+  .weight(function(d){ return weightScale(d); }           // set the weight accessor
   .clip([[0,0], [0,height], [width, height], [width,0]])  // set the clipping polygon
 
-var res = voronoiMap(data);                         // compute the weighted Voronoi tessellation; returns {polygons, iterationCount, convergenceRatio}
+var res = voronoiMap(data); // compute the weighted Voronoi tessellation; returns {polygons, iterationCount, convergenceRatio}
 var cells = res.polygons
 ```
 
@@ -75,7 +75,7 @@ d3.selectAll('path')
 
 <a name="voronoiMap" href="#voronoiMap">#</a> d3.<b>voronoiMap</b>()
 
-Creates a new voronoiMap with the default accessors and configuration values ([_weight_](#voronoiMap_weight), [_clip_](#voronoiMap_clip), [_convergenceRatio_](#voronoiMap_convergenceRatio), [_maxIterationCount_](#voronoiMap_maxIterationCount), [_minWeightRatio_](#voronoiMap_minWeightRatio), [_initialPosition_](#voronoiMap_initialPosition), and [_initialWeight_](#voronoiMap_initialWeight)).
+Creates a new voronoiMap with the default accessors and configuration values ([_weight_](#voronoiMap_weight), [_clip_](#voronoiMap_clip), [_convergenceRatio_](#voronoiMap_convergenceRatio), [_maxIterationCount_](#voronoiMap_maxIterationCount), [_minWeightRatio_](#voronoiMap_minWeightRatio), [_prng_](#voronoiMap_prng), [_initialPosition_](#voronoiMap_initialPosition), and [_initialWeight_](#voronoiMap_initialWeight)).
 
 <a name="_voronoiMap" href="#_voronoiMap">#</a> <i>voronoiMap</i>(<i>data</i>)
 
@@ -147,17 +147,17 @@ var minWeightRatio = 0.01; // 1% of maxWeight
 
 _minWeightRatio_ allows to mitigate flickerring behaviour (caused by too small weights), and enhances user interaction by not computing near-empty cells.
 
-<a name="voronoiMap_rng" href="#voronoiMap_rng">#</a> <i>voronoiMap</i>.<b>rng</b>([<i>rng</i>])
+<a name="voronoiMap_prng" href="#voronoiMap_prng">#</a> <i>voronoiMap</i>.<b>prng</b>([<i>prng</i>])
 
-If _rng_ is specified, sets the random number generator which is used when randomness is required (e.g. in `d3.voronoiMapInitialPositionRandom()`, cf. [_initialPosition_](#voronoiMap_initialPosition)). The given random number generator must implement the same interface as `Math.random` and must only return values in the range [0, 1). If _rng_ is not specified, returns the current _rng_ , which defaults to `Math.random`.
+If _prng_ is specified, sets the pseudorandom number generator which is used when randomness is required (e.g. in `d3.voronoiMapInitialPositionRandom()`, cf. [_initialPosition_](#voronoiMap_initialPosition)). The given pseudorandom number generator must implement the same interface as `Math.random` and must only return values in the range [0, 1). If _prng_ is not specified, returns the current _prng_ , which defaults to `Math.random`.
 
-Considering the same set of data, severall Voronoï map computations lead to disctinct final arrangements, due to the non-seedable `Math.random` default number generator. If _rng_ is set to a _seedable_ random number generator which produces repeatable results, then several computations will produce the exact same final arrangement. This is useful if you want the same arrangement for distinct page loads/reloads. For example, using [seedrandom](https://github.com/davidbau/seedrandom):
+Considering the same set of data, severall Voronoï map computations lead to disctinct final arrangements, due to the non-seedable `Math.random` default number generator. If _prng_ is set to a _seedable_ pseudorandom number generator which produces repeatable results, then several computations will produce the exact same final arrangement. This is useful if you want the same arrangement for distinct page loads/reloads. For example, using [seedrandom](https://github.com/davidbau/seedrandom):
 
 ```js
-<script src="//cdnjs.cloudflare.com/ajax/libs/seedrandom/2.4.3/lib/alea.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/seedrandom/2.4.3/seedrandom.min.js"></script>
 <script>
-  var myseededrng = new Math.seedrandom('my seed'); // (from seedrandom's doc) Use "new" to create a local prng without altering Math.random
-  voronoiMap.rng(myseededrng);
+  var myseededprng = new Math.seedrandom('my seed'); // (from seedrandom's doc) Use "new" to create a local pprng without altering Math.random
+  voronoiMap.prng(myseededprng);
 </script>
 ```
 
@@ -177,7 +177,7 @@ function precomputedInitialPosition(d, i, arr, voronoiMap) {
 
 Furthermore, two predefined policies are available:
 
-- the random policy, available through `d3.voronoiMapInitialPositionRandom()`, which is the default intital position policy; it uses the specified [_rng_](#voronoiMap_rng), and may produce repeatable arrangement if a seeded random number generator is defined;
+- the random policy, available through `d3.voronoiMapInitialPositionRandom()`, which is the default intital position policy; it uses the specified [_prng_](#voronoiMap_prng), and may produce repeatable arrangement if a seeded random number generator is defined;
 - the pie-based policy, available through `d3.voronoiMapInitialPositionPie()` which initializes positions of data along an inner circle of the clipping polygon, in an equaly distributed counterclockwise way (reverse your data to have a clockwise counterpart); the first datum is positioned at 0 radian (i.e. at right), but this can be customized through the `d3.voronoiMapInitialPositionPie().startAngle(<yourFavoriteAngleInRad>)` API; the name of this policy comes from the very first iteration which looks like a pie;
 
 You can take a look at these policies to define your own complex initial position policies/accessors.

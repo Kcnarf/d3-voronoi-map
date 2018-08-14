@@ -22,7 +22,7 @@ tape("voronoiMap(...) should set the expected defaults", function (test) {
     [1, 1]
   ]);
   test.deepEqual(voronoiMap.size(), [1, 1]);
-  test.equal(voronoiMap.rng(), Math.random);
+  test.equal(voronoiMap.prng(), Math.random);
   test.end();
 });
 
@@ -131,14 +131,14 @@ tape("voronoiMap.minWeightRatio(...) should set the specified ratio", function (
   test.end();
 });
 
-tape("voronoiMap.rng(...) should set the specified random number generator", function (test) {
+tape("voronoiMap.prng(...) should set the specified pseudorandom number generator", function (test) {
   var voronoiMap = d3VoronoiMap.voronoiMap();
-  var myrng = function () {
+  var myprng = function () {
     return Math.random;
   }
 
-  test.equal(voronoiMap.rng(myrng), voronoiMap);
-  test.equal(voronoiMap.rng(), myrng);
+  test.equal(voronoiMap.prng(myprng), voronoiMap);
+  test.equal(voronoiMap.prng(), myprng);
   test.end();
 });
 

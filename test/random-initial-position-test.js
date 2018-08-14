@@ -67,8 +67,8 @@ tape("initial-position-policies/randomPolicy(...) should handle clipping polygon
   test.end();
 });
 
-tape("initial-position-policies/randomPolicy(...) should depend on random number generator", function (test) {
-  var myrng = function () { // not random but do the trick for the test
+tape("initial-position-policies/randomPolicy(...) should depend on prng", function (test) {
+  var myprng = function () { // not random but do the trick for the test
     var memo = 0;
     return function () {
       memo += .1;
@@ -76,7 +76,7 @@ tape("initial-position-policies/randomPolicy(...) should depend on random number
     }
   };
   var initialPositionRandom = d3VoronoiMapInitialPositionRandom(),
-    voronoiMap = d3VoronoiMap.voronoiMap().rng(myrng()),
+    voronoiMap = d3VoronoiMap.voronoiMap().prng(myprng()),
     data = [{
       weight: 1
     }],

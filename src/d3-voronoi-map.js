@@ -18,7 +18,7 @@ export function voronoiMap() {
   var DEFAULT_CONVERGENCE_RATIO = 0.01;
   var DEFAULT_MAX_ITERATION_COUNT = 50;
   var DEFAULT_MIN_WEIGHT_RATIO = 0.01;
-  var DEFAULT_RNG = Math.random;
+  var DEFAULT_PRNG = Math.random;
   var DEFAULT_INITIAL_POSITION = randomInitialPosition();
   var DEFAULT_INITIAL_WEIGHT = halfAverageAreaInitialWeight();
   var RANDOM_INITIAL_POSITION = randomInitialPosition();
@@ -32,7 +32,7 @@ export function voronoiMap() {
   var convergenceRatio = DEFAULT_CONVERGENCE_RATIO; // targeted allowed error ratio; default 0.01 stops computation when cell areas error <= 1% clipping polygon's area
   var maxIterationCount = DEFAULT_MAX_ITERATION_COUNT; // maximum allowed iteration; stops computation even if convergence is not reached; use a large amount for a sole converge-based computation stop
   var minWeightRatio = DEFAULT_MIN_WEIGHT_RATIO; // used to compute the minimum allowed weight; default 0.01 means 1% of max weight; handle near-zero weights, and leaves enought space for cell hovering
-  var rng = DEFAULT_RNG; // random number generator
+  var prng = DEFAULT_PRNG; // pseudorandom number generator
   var initialPosition = DEFAULT_INITIAL_POSITION; // accessor to the initial position; defaults to a random position inside the clipping polygon
   var initialWeight = DEFAULT_INITIAL_WEIGHT; // accessor to the initial weight; defaults to the average area of the clipping polygon
   var tick = function (polygons, i) {
@@ -171,12 +171,12 @@ export function voronoiMap() {
     return _voronoiMap;
   };
 
-  _voronoiMap.rng = function (_) {
+  _voronoiMap.prng = function (_) {
     if (!arguments.length) {
-      return rng;
+      return prng;
     }
 
-    rng = _;
+    prng = _;
     return _voronoiMap;
   };
 
