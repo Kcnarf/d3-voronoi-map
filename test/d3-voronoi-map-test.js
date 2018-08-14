@@ -134,7 +134,7 @@ tape("voronoiMap.minWeightRatio(...) should set the specified ratio", function (
 tape("voronoiMap.prng(...) should set the specified pseudorandom number generator", function (test) {
   var voronoiMap = d3VoronoiMap.voronoiMap();
   var myprng = function () {
-    return Math.random;
+    return Math.random();
   }
 
   test.equal(voronoiMap.prng(myprng), voronoiMap);

@@ -18,56 +18,58 @@ tape("initial-position-policies/randomPolicy()(...) default test", function (tes
   test.end();
 });
 
-tape("initial-position-policies/randomPolicy(...) should depends on clipping polygon", function (test) {
-  var initialPositionRandom = d3VoronoiMapInitialPositionRandom(),
-    voronoiMap = d3VoronoiMap.voronoiMap().extent([
-      [1, 1],
-      [2, 2]
-    ]),
-    data = [{
-      weight: 1
-    }],
+tape("initial-position-policies/randomPolicy()(...) and clipping polygon", function (test) {
+  test.test("initial-position-policies/randomPolicy()(...) should depends on clipping polygon", function (test) {
+    var initialPositionRandom = d3VoronoiMapInitialPositionRandom(),
+      voronoiMap = d3VoronoiMap.voronoiMap().extent([
+        [1, 1],
+        [2, 2]
+      ]),
+      data = [{
+        weight: 1
+      }],
+      initCoords = initialPositionRandom(data[0], 0, data, voronoiMap);
+
+    test.ok(initCoords[0] > 1);
+    test.ok(initCoords[0] < 2);
+    test.ok(initCoords[1] > 1);
+    test.ok(initCoords[1] < 2);
+
+    test.end();
+  });
+
+  test.test("initial-position-policies/randomPolicy()(...) should handle clipping polygon updates", function (test) {
+    var initialPositionRandom = d3VoronoiMapInitialPositionRandom(),
+      voronoiMap = d3VoronoiMap.voronoiMap().extent([
+        [1, 1],
+        [2, 2]
+      ]),
+      data = [{
+        weight: 1
+      }],
+      initCoords = initialPositionRandom(data[0], 0, data, voronoiMap);
+
+    test.ok(initCoords[0] > 1);
+    test.ok(initCoords[0] < 2);
+    test.ok(initCoords[1] > 1);
+    test.ok(initCoords[1] < 2);
+
+    voronoiMap.extent([
+      [2, 2],
+      [3, 3]
+    ])
     initCoords = initialPositionRandom(data[0], 0, data, voronoiMap);
 
-  test.ok(initCoords[0] > 1);
-  test.ok(initCoords[0] < 2);
-  test.ok(initCoords[1] > 1);
-  test.ok(initCoords[1] < 2);
+    test.ok(initCoords[0] > 2);
+    test.ok(initCoords[0] < 3);
+    test.ok(initCoords[1] > 2);
+    test.ok(initCoords[1] < 3);
 
-  test.end();
+    test.end();
+  });
 });
 
-tape("initial-position-policies/randomPolicy(...) should handle clipping polygon updates", function (test) {
-  var initialPositionRandom = d3VoronoiMapInitialPositionRandom(),
-    voronoiMap = d3VoronoiMap.voronoiMap().extent([
-      [1, 1],
-      [2, 2]
-    ]),
-    data = [{
-      weight: 1
-    }],
-    initCoords = initialPositionRandom(data[0], 0, data, voronoiMap);
-
-  test.ok(initCoords[0] > 1);
-  test.ok(initCoords[0] < 2);
-  test.ok(initCoords[1] > 1);
-  test.ok(initCoords[1] < 2);
-
-  voronoiMap.extent([
-    [2, 2],
-    [3, 3]
-  ])
-  initCoords = initialPositionRandom(data[0], 0, data, voronoiMap);
-
-  test.ok(initCoords[0] > 2);
-  test.ok(initCoords[0] < 3);
-  test.ok(initCoords[1] > 2);
-  test.ok(initCoords[1] < 3);
-
-  test.end();
-});
-
-tape("initial-position-policies/randomPolicy(...) should use expected prng", function (test) {
+tape("initial-position-policies/randomPolicy()(...) should use expected prng", function (test) {
   var myprng = function () { // not a prng, but do the trick for the test!
     var memo = 0;
     return function () {
