@@ -38,11 +38,17 @@ Load `https://rawgit.com/Kcnarf/d3-voronoi-map/master/build/d3-voronoi-map.js` (
 
 ```html
 <script src="https://d3js.org/d3.v4.min.js"></script>
-<script src="https://raw.githack.com/Kcnarf/d3-weighted-voronoi/master/build/d3-weighted-voronoi.js"></script>
-<script src="https://raw.githack.com/Kcnarf/d3-voronoi-map/master/build/d3-voronoi-map.js"></script>
+<script src="https://rawcdn.githack.com/Kcnarf/d3-weighted-voronoi/v1.0.0/build/d3-weighted-voronoi.js"></script>
+<script src="https://rawcdn.githack.com/Kcnarf/d3-voronoi-map/v1.2.0/build/d3-voronoi-map.js"></script>
 <script>
   var simulation = d3.voronoiMapSimulation(data);
 </script>
+```
+
+If you're interested in the latest developments, you can use the master build, available throught:
+
+```html
+<script src="https://raw.githack.com/Kcnarf/d3-voronoi-map/master/build/d3-voronoi-map.js"></script>
 ```
 
 ## TL;DR;
