@@ -31,6 +31,7 @@ The rest of this README gives some implementatiton details and example on these 
 ## Examples
 
 - [The Individual Costs of Being Obese in the U.S. (2010)](https://bl.ocks.org/kcnarf/e649c8723eff3fd64a23f75901910930), a remake of [HowMuch.net's post](https://howmuch.net/articles/obesity-costs-visualized)
+- a [simple example](https://bl.ocks.org/Kcnarf/95fbcdb4e58a4e048867667c23071a28) explains how to switch from a live arrangement to a static arrangement
 
 ## Installing
 
@@ -85,7 +86,7 @@ Or, if you want to display only the <a name="tldr_static" href="#tldr_static">st
 var simulation = d3.voronoiMapSimulation(data)
   .weight(function(d){ return weightScale(d); }           // set the weight accessor
   .clip([[0,0], [0,height], [width, height], [width,0]])  // set the clipping polygon
-  .stop();                                                // interupts the simulation
+  .stop();                                                // immediately stops the simulation
 
 var state = simulation.state();                           // retrieve the simulation's state, i.e. {ended, polygons, iterationCount, convergenceRatio}
 
@@ -280,6 +281,18 @@ The typenames is a string containing one or more typename separated by whitespac
 Note that tick events are not dispatched when [simulation.tick](#simulation_tick) is called manually when only displaying a [static] Voronoï map; events are only dispatched by the internal timer, and are intended for the [live](#live) Voronoï map.
 
 See [dispatch.on](https://github.com/d3/d3-dispatch#dispatch_on) for details.
+
+## Migrations
+
+### From v1.x.x to v2.x.x
+
+In v1.x.x, the plugin only allows to compute a [static](#static) Voronoï map. In order to maintain this behaviour with v2.x.x, your should update your code as it is described in [TL;DR; static Voronoï map](#tldr_static).
+
+Regarding the API:
+
+- all the APIs of v1.x.x are available in v2.x.x
+- v2.x.x adds APIs related to the simulation (i.e. [simulation.stop](#simulation_stop), [simulation.tick](#simulation_tick), [simulation.restart](#simulation_restart), [simulation.on](#simulation_on) and [simulation.state](#simulation_state))
+- `simulation.state().polygons` is the new way to retrieve cells.
 
 ## Dependencies
 
