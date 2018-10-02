@@ -4,7 +4,6 @@ import {
   polygonContains as d3PolygonContains
 } from 'd3-polygon';
 import {
-  // timer as d3Timer
   timer as d3Timer
 } from 'd3-timer';
 import {

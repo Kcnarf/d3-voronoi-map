@@ -118,9 +118,9 @@ d3.selectAll('path').data(polygons);                      // d3's join
 
 Creates a new simulation with the specified array of data, and the default accessors and configuration values ([_weight_](#simulation_weight), [_clip_](#simulation_clip), [_convergenceRatio_](#simulation_convergenceRatio), [_maxIterationCount_](#simulation_maxIterationCount), [_minWeightRatio_](#simulation_minWeightRatio), [_prng_](#simulation_prng), [_initialPosition_](#simulation_initialPosition), and [_initialWeight_](#simulation_initialWeight)).
 
-The simulator starts automatically. For a [live](#live) Vornoï map, use [simulation.on](#simulation_on) to listen for _tick_ events as the simulation runs, and _end_ event when the simulation finishes. See also [TL;DR; live Voronoï map](#tldr_live).
+The simulation starts automatically. For a [live](#live) Voronoï map, use [simulation.on](#simulation_on) to listen for _tick_ events as the simulation runs, and _end_ event when the simulation finishes. See also [TL;DR; live Voronoï map](#tldr_live).
 
-For a [static](#static) Vornoï map, call [simulation.stop](#simulation_stop), and then call [simulation.tick](#simulation_tick) as desired. See also [TL;DR; static Voronoï map](#tldr_static).
+For a [static](#static) Voronoï map, call [simulation.stop](#simulation_stop), and then call [simulation.tick](#simulation_tick) as desired. See also [TL;DR; static Voronoï map](#tldr_static).
 
 <a name="simulation_state" href="#simulation_state">#</a> <i>simulation</i>.<b>state</b>()
 
@@ -254,7 +254,7 @@ Considering a unique clipping polygon where you want to animate the same data bu
 
 <a name="simulation_stop" href="#simulation_stop">#</a> <i>simulation</i>.<b>stop</b>()
 
-Stops the simulation’s internal timer, if it is running, and returns the simulation. If the timer is already stopped, this method does nothing. This method is useful to display only a [static](#static) Vornoï map. In such a case, you have to stop the simulation, and run it manually till its end with [simulation.tick](#simulation_tick) (see also [TL;DR; static Voronoï map](#tldr_static)).
+Stops the simulation’s internal timer, if it is running, and returns the simulation. If the timer is already stopped, this method does nothing. This method is useful to display only a [static](#static) Voronoï map. In such a case, you have to stop the simulation, and run it manually till its end with [simulation.tick](#simulation_tick) (see also [TL;DR; static Voronoï map](#tldr_static)).
 
 <a name="simulation_tick" href="#simulation_tick">#</a> <i>simulation</i>.<b>tick</b>()
 
