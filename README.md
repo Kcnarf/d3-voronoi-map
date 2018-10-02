@@ -8,6 +8,7 @@ Because a picture is worth a thousand words:
 ![hexagon](./img/hexagon.png)
 ![diamond](./img/diamond.png)
 ![circle](./img/circle.png)
+![simulation](./img/simulation.gif)
 
 Available for **d3 v4** and **d3 v5**.
 
