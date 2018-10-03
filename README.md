@@ -24,7 +24,7 @@ The computation of the Voronoï map is based on a iteration/looping process. Hen
 
 As the [d3-force](https://github.com/d3/d3-force) layout does, this module can be used in two ways :
 
-- <a name="live" href="#live">live Voronoï map</a>: displays the evolution of the self-organising Voronoï map; each iteration is displayed, with some delay between iterations so that the animation is appealing to human eyes;
+- <a name="live" href="#live">live Voronoï map</a>: displays the evolution of the self-organizing Voronoï map; each iteration is displayed, with some delay between iterations so that the animation is appealing to human eyes;
 - <a name="static" href="#static">static Voronoï map</a>: displays only the final most representative Voronoï map, which is faster than the _live_ use case; intermediate iterations are silently computed, one after each other, without any delay.
 
 The rest of this README gives some implementatiton details and example on these two use cases.
@@ -55,7 +55,7 @@ If you're interested in the latest developments, you can use the master build, a
 
 ## TL;DR;
 
-In your javascript, if you want to display a <a name="tldr_live" href="#tldr_live">live</a> Voronoï map (i.e. displays the evolution of the self-organising Voronoï map) :
+In your javascript, if you want to display a <a name="tldr_live" href="#tldr_live">live</a> Voronoï map (i.e. displays the evolution of the self-organizing Voronoï map) :
 
 ```javascript
 var simulation = d3.voronoiMapSimulation(data)
