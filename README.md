@@ -31,7 +31,7 @@ The rest of this README gives some implementatiton details and example on these 
 
 ## Examples
 
-- [The Individual Costs of Being Obese in the U.S. (2010)](https://bl.ocks.org/kcnarf/e649c8723eff3fd64a23f75901910930), a remake of [HowMuch.net's post](https://howmuch.net/articles/obesity-costs-visualized)
+- [The Individual Costs of Being Obese in the U.S. (2010)](https://bl.ocks.org/kcnarf/89d9d2d575f5c4ad41235cad6b202742), a remake of [HowMuch.net's post](https://howmuch.net/articles/obesity-costs-visualized)
 - a [simple example](https://bl.ocks.org/Kcnarf/95fbcdb4e58a4e048867667c23071a28) explains how to switch from a live arrangement to a static arrangement
 
 ## Installing
