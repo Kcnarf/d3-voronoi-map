@@ -40,7 +40,7 @@ If you use NPM, `npm install d3-voronoi-treemap`. Otherwise, load `https://rawcd
 
 ```html
 <script src="https://d3js.org/d3.v4.min.js"></script>
-<script src="https://rawcdn.githack.com/Kcnarf/d3-weighted-voronoi/v1.0.0/build/d3-weighted-voronoi.js"></script>
+<script src="https://rawcdn.githack.com/Kcnarf/d3-weighted-voronoi/v1.0.1/build/d3-weighted-voronoi.js"></script>
 <script src="https://rawcdn.githack.com/Kcnarf/d3-voronoi-map/v2.0.0/build/d3-voronoi-map.js"></script>
 <script>
   var simulation = d3.voronoiMapSimulation(data);
