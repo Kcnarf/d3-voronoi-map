@@ -33,6 +33,7 @@ The rest of this README gives some implementatiton details and example on these 
 
 - [The Individual Costs of Being Obese in the U.S. (2010)](https://bl.ocks.org/kcnarf/89d9d2d575f5c4ad41235cad6b202742), a remake of [HowMuch.net's post](https://howmuch.net/articles/obesity-costs-visualized)
 - a [simple example](https://bl.ocks.org/Kcnarf/95fbcdb4e58a4e048867667c23071a28) explains how to switch from a live arrangement to a static arrangement
+- a [simple example](https://bl.ocks.org/Kcnarf/81f4ce6a76abe132427a29b1519caee8) explains how to update and animate an existing arrangement
 
 ## Installing
 
@@ -200,7 +201,7 @@ var minWeightRatio = 0.01; // 1% of maxWeight
 
 _minWeightRatio_ allows to mitigate flickerring behaviour (caused by too small weights), and enhances user interaction by not computing near-empty cells.
 
-<a name="simulatiopn_prng" href="#simulation_prng">#</a> <i>simulation</i>.<b>prng</b>([<i>prng</i>])
+<a name="simulation_prng" href="#simulation_prng">#</a> <i>simulation</i>.<b>prng</b>([<i>prng</i>])
 
 If _prng_ is specified, sets the pseudorandom number generator which is used when randomness is required (e.g. in `d3.voronoiMapInitialPositionRandom()`, cf. [_initialPosition_](#simulatrion_initialPosition)). The given pseudorandom number generator must implement the same interface as `Math.random` and must only return values in the range [0, 1[. If _prng_ is not specified, returns the current _prng_ , which defaults to `Math.random`.
 
@@ -230,14 +231,14 @@ function precomputedInitialPosition(d, i, arr, simulation) {
 
 Furthermore, two predefined policies are available:
 
-- the random policy, available through `d3.voronoiMapInitialPositionRandom()`, which is the default intital position policy; it uses the specified [_prng_](#voronoiMap_prng), and may produce repeatable arrangement if a seeded random number generator is defined;
+- the random policy, available through `d3.voronoiMapInitialPositionRandom()`, which is the default intital position policy; it uses the specified [_prng_](#simulation_prng), and may produce repeatable arrangement if a seeded random number generator is defined;
 - the pie-based policy, available through `d3.voronoiMapInitialPositionPie()` which initializes positions of data along an inner circle of the clipping polygon, in an equaly distributed counterclockwise way (reverse your data to have a clockwise counterpart); the first datum is positioned at 0 radian (i.e. at right), but this can be customized through the `d3.voronoiMapInitialPositionPie().startAngle(<yourFavoriteAngleInRad>)` API; the name of this policy comes from the very first iteration which looks like a pie;
 
 You can take a look at these policies to define your own complex initial position policies/accessors.
 
 <a name="voronoiMap_initialWeight" href="#voronoiMap_initialWeight">#</a> <i>voronoiMap</i>.<b>initialWeight</b>([<i>initialWeight</i>])
 
-If _initialWeight_ is specified, sets the initial weight accessor. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the current _simulation. The accessor must provide a positive amount. If \_initialWeight_ is not specified, returns the current accessor, which defaults to initialize all sites with the same amount (which depends on the clipping polygon and the number of data):
+If _initialWeight_ is specified, sets the initial weight accessor. The accessor is a callback wich is passed the datum, its index, the array it comes from, and the current _simulation_. The accessor must provide a positive amount. If _initialWeight_ is not specified, returns the current accessor, which defaults to initialize all sites with the same amount (which depends on the clipping polygon and the number of data):
 
 A custom accessor may look like:
 
@@ -249,10 +250,12 @@ function precomputedInitialWeight(d, i, arr, simulation) {
 
 Furthermore, the default half average area policy is available through `d3.voronoiMapInitialWeightHalfAverageArea()`.
 
-Considering a unique clipping polygon where you want to animate the same data but with slightly different weights (e.g., animate according to the time), this API combined with the [_initialPosition_](#simulation_initialPosition) API allows you to maintain areas from one set to another:
+Considering a unique clipping polygon where you want animate the same set of data but with evolving weights (e.g., animate according to passing time), this API combined with the [_initialPosition_](#simulation_initialPosition) API allows you to maintain areas from one set to another:
 
 - first, compute the Voronoï map of a first set of data
-- then, compute the Voronoï map of another set of data, by initilizing sites to the final values (positions and weights) of first Voronoï map
+- then, compute the Voronoï map of another set of data, by initializing sites to the final values (positions and weights) of first Voronoï map
+
+See [Update and Animate a Voronooï map](https://bl.ocks.org/Kcnarf/81f4ce6a76abe132427a29b1519caee8) for a live example.
 
 <a name="simulation_stop" href="#simulation_stop">#</a> <i>simulation</i>.<b>stop</b>()
 
