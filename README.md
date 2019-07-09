@@ -255,7 +255,7 @@ Considering a unique clipping polygon where you want animate the same set of dat
 - first, compute the Voronoï map of a first set of data
 - then, compute the Voronoï map of another set of data, by initializing sites to the final values (positions and weights) of first Voronoï map
 
-See [Update and Animate a Voronooï map](https://bl.ocks.org/Kcnarf/81f4ce6a76abe132427a29b1519caee8) for a live example.
+See [Update and Animate a Voronooï map](https://bl.ocks.org/Kcnarf/81f4ce6a76abe132427a29b1519caee8) or [Global Population by Region from 1950 to 2100 - a remake](https://bl.ocks.org/Kcnarf/6195b6ec020c180ad50a14b739510ddc) for live examples.
 
 <a name="simulation_stop" href="#simulation_stop">#</a> <i>simulation</i>.<b>stop</b>()
 
