@@ -185,6 +185,9 @@ export function voronoiMapSimulation(data) {
     },
 
     state: function() {
+      if (shouldInitialize) {
+        initializeSimulation();
+      }
       return {
         ended: ended,
         iterationCount: iterationCount,
@@ -491,6 +494,5 @@ export function voronoiMapSimulation(data) {
     }
   }
 
-  initializeSimulation();
   return simulation;
 }

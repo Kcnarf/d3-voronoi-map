@@ -526,6 +526,9 @@
       },
 
       state: function() {
+        if (shouldInitialize) {
+          initializeSimulation();
+        }
         return {
           ended: ended,
           iterationCount: iterationCount,
@@ -832,7 +835,6 @@
       }
     }
 
-    initializeSimulation();
     return simulation;
   }
 
