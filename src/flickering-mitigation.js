@@ -3,7 +3,7 @@ export function FlickeringMitigation () {
   /////// Inputs ///////
   this.growthChangesLength = DEFAULT_LENGTH;
   this.totalAvailableArea = NaN;
-  
+
   //begin: internals
   this.lastAreaError = NaN;
   this.lastGrowth = NaN;
@@ -23,10 +23,10 @@ function generateGrowthChangeWeights(length) {
   var initialWeight = 3;   // a magic number
   var weightDecrement = 1; // a magic number
   var minWeight = 1;
-  
+
   var weightedCount = initialWeight;
   var growthChangeWeights = [];
-  
+
   for (var i=0; i<length; i++) {
     growthChangeWeights.push(weightedCount);
     weightedCount -= weightDecrement;
@@ -55,7 +55,7 @@ FlickeringMitigation.prototype.reset = function () {
   this.growthChangeWeights = generateGrowthChangeWeights(this.growthChangesLength);
   this.growthChangeWeightsSum = computeGrowthChangeWeightsSum(this.growthChangeWeights);
   this.totalAvailableArea = NaN;
-  
+
   return this;
 };
 
@@ -63,13 +63,13 @@ FlickeringMitigation.prototype.clear = function () {
   this.lastAreaError = NaN;
   this.lastGrowth = NaN;
   this.growthChanges = [];
-  
+
   return this;
 };
 
 FlickeringMitigation.prototype.length = function (_) {
   if (!arguments.length) { return this.growthChangesLength; }
-  
+
   if (parseInt(_)>0) {
     this.growthChangesLength = Math.floor(parseInt(_));
     this.growthChangeWeights = generateGrowthChangeWeights(this.growthChangesLength);
@@ -82,7 +82,7 @@ FlickeringMitigation.prototype.length = function (_) {
 
 FlickeringMitigation.prototype.totalArea = function (_) {
   if (!arguments.length) { return this.totalAvailableArea; }
-  
+
   if (parseFloat(_)>0) {
     this.totalAvailableArea = parseFloat(_);
   } else {
@@ -125,9 +125,11 @@ FlickeringMitigation.prototype.ratio = function () {
 
   ratio = weightedChangeCount/this.growthChangeWeightsSum;
 
+  /*
   if (ratio>0) {
     console.log("flickering mitigation ratio: "+Math.floor(ratio*1000)/1000);
   }
+  */
 
   return ratio;
 };
