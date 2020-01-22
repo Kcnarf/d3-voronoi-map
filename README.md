@@ -37,7 +37,12 @@ The rest of this README gives some implementatiton details and example on these 
 
 ## Installing
 
-If you use NPM, `npm install d3-voronoi-map` and then to import it `import { voronoiMapSimulation } from 'd3-voronoi-map'`.
+If you use NPM, `npm install d3-voronoi-map` and import it with
+
+```js
+import { voronoiMapSimulation } from 'd3-voronoi-map';
+```
+
 Otherwise, load `https://rawcdn.githack.com/Kcnarf/d3-voronoi-map/v2.0.0/build/d3-voronoi-map.js` (or its `d3-voronoi-map.min.js` version) to make it available in AMD, CommonJS, or vanilla environments. In vanilla, you must load the [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi) plugin prior to this one, and a d3 global is exported:
 
 ```html
@@ -153,7 +158,12 @@ function weight(d) {
 If _clip_ is specified, sets the clipping polygon, compute the adequate [_extent_](#simulation_extent) and [_size_](#simulation_size), and returns this layout. _clip_ defines a hole-free convex polygon, and is specified as an array of 2D points \[x, y\], which must be _(i)_ open (no duplication of the first D2 point) and _(ii)_ counterclockwise (assuming the origin ⟨0,0⟩ is in the top-left corner). If _clip_ is not specified, returns the current clipping polygon, which defaults to:
 
 ```js
-[[0, 0], [0, 1], [1, 1], [1, 0]];
+[
+  [0, 0],
+  [0, 1],
+  [1, 1],
+  [1, 0]
+];
 ```
 
 <a name="simulation_extent" href="#simulation_extent">#</a> <i>simulation</i>.<b>extent</b>([<i>extent</i>])
@@ -161,7 +171,10 @@ If _clip_ is specified, sets the clipping polygon, compute the adequate [_extent
 If _extent_ is specified, it is a convenient way to define the clipping polygon as a rectangle. It sets the extent, computes the adequate [_clip_](#simulation_clip)ping polygon and [_size_](#simulation_size), and returns this layout. _extent_ must be a two-element array of 2D points \[x, y\], which defines the clipping polygon as a rectangle with the top-left and bottom-right corners respectively set to the first and second points (assuming the origin ⟨0,0⟩ is in the top-left corner on the screen). If _extent_ is not specified, returns the current extent, which is `[[minX, minY], [maxX, maxY]]` of current clipping polygon, and defaults to:
 
 ```js
-[[0, 0], [1, 1]];
+[
+  [0, 0],
+  [1, 1]
+];
 ```
 
 <a name="simulation_size" href="#simulation_size">#</a> <i>simulation</i>.<b>size</b>([<i>size</i>])
