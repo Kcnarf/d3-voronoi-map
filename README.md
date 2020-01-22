@@ -37,7 +37,8 @@ The rest of this README gives some implementatiton details and example on these 
 
 ## Installing
 
-If you use NPM, `npm install d3-voronoi-treemap`. Otherwise, load `https://rawcdn.githack.com/Kcnarf/d3-voronoi-map/v2.0.0/build/d3-voronoi-map.js` (or its `d3-voronoi-map.min.js` version) to make it available in AMD, CommonJS, or vanilla environments. In vanilla, you must load the [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi) plugin prior to this one, and a d3 global is exported:
+If you use NPM, `npm install d3-voronoi-map` and then to import it `import { voronoiMapSimulation } from 'd3-voronoi-map'`.
+Otherwise, load `https://rawcdn.githack.com/Kcnarf/d3-voronoi-map/v2.0.0/build/d3-voronoi-map.js` (or its `d3-voronoi-map.min.js` version) to make it available in AMD, CommonJS, or vanilla environments. In vanilla, you must load the [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi) plugin prior to this one, and a d3 global is exported:
 
 ```html
 <script src="https://d3js.org/d3.v4.min.js"></script>
