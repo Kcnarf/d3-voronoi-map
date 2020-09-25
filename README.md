@@ -31,9 +31,16 @@ The rest of this README gives some implementatiton details and example on these 
 
 ## Examples
 
-- [The Individual Costs of Being Obese in the U.S. (2010)](https://bl.ocks.org/kcnarf/89d9d2d575f5c4ad41235cad6b202742), a remake of [HowMuch.net's post](https://howmuch.net/articles/obesity-costs-visualized)
-- a [simple example](https://bl.ocks.org/Kcnarf/95fbcdb4e58a4e048867667c23071a28) explains how to switch from a live arrangement to a static arrangement
-- a [simple example](https://bl.ocks.org/Kcnarf/81f4ce6a76abe132427a29b1519caee8) and [Global Population by Region by 1950 to 2100 - a remake](https://bl.ocks.org/Kcnarf/6195b6ec020c180ad50a14b739510ddc) explain how to update and animate an existing arrangement
+- Real life use cases
+
+  - [Democratic Primaries: Preferential Poll Results](https://swayable.com/insights/primaries2019) by Nadieh Bremer in Swayable, with animated Voronoï maps (more details at https://www.visualcinnamon.com/portfolio/swayable-preferential-polling)
+  - [The Battleground States Biden and Trump Need to Win 270](https://www.nytimes.com/interactive/2020/us/elections/election-states-biden-trump.html) by in The New York Times, with interactive and playful Voronoï maps
+  - [Land of colors](https://public.tableau.com/profile/guillevin#!/vizhome/LandOfColors/Landofcolors) by Tristan Guillevin in Tableau, with small multiples Voronoï maps
+
+- Examples with available code
+  - [The Individual Costs of Being Obese in the U.S. (2010)](https://bl.ocks.org/kcnarf/89d9d2d575f5c4ad41235cad6b202742), a remake of [HowMuch.net's post](https://howmuch.net/articles/obesity-costs-visualized)
+  - a [simple example](https://bl.ocks.org/Kcnarf/95fbcdb4e58a4e048867667c23071a28) explains how to switch from a live arrangement to a static arrangement
+  - a [simple example](https://bl.ocks.org/Kcnarf/81f4ce6a76abe132427a29b1519caee8) and [Global Population by Region by 1950 to 2100 - a remake](https://bl.ocks.org/Kcnarf/6195b6ec020c180ad50a14b739510ddc) explain how to update and animate an existing arrangement
 
 ## Installing
 
@@ -162,7 +169,7 @@ If _clip_ is specified, sets the clipping polygon, compute the adequate [_extent
   [0, 0],
   [0, 1],
   [1, 1],
-  [1, 0]
+  [1, 0],
 ];
 ```
 
@@ -173,7 +180,7 @@ If _extent_ is specified, it is a convenient way to define the clipping polygon 
 ```js
 [
   [0, 0],
-  [1, 1]
+  [1, 1],
 ];
 ```
 
