@@ -326,6 +326,11 @@ Regarding the API:
 - d3-timer.timer
 - d3-weighted-voronoi.weightedVoronoi
 
+## Semantic Versioning
+
+d3-voronoi-map attempts to follow [semantic versioning](https://semver.org) and
+bump major version only when backwards incompatible changes are released.
+
 ## Testing
 
 In order to test the code
