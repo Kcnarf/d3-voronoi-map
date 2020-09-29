@@ -10,7 +10,7 @@ Because a picture is worth a thousand words:
 ![circle](./img/circle.png)
 ![simulation](./img/simulation.gif)
 
-Available for **d3 v4** and **d3 v5**.
+Available for **d3 v4**, **d3 v5** and **d3 v6**.
 
 If you're interested on multi-level treemap, which handle nested/hierarchical data, take a look at the [d3-voronoi-treemap](https://github.com/Kcnarf/d3-voronoi-treemap) plugin.
 
@@ -53,7 +53,7 @@ import { voronoiMapSimulation } from 'd3-voronoi-map';
 Otherwise, load `https://rawcdn.githack.com/Kcnarf/d3-voronoi-map/v2.0.1/build/d3-voronoi-map.js` (or its `d3-voronoi-map.min.js` version) to make it available in AMD, CommonJS, or vanilla environments. In vanilla, you must load the [d3-weighted-voronoi](https://github.com/Kcnarf/d3-weighted-voronoi) plugin prior to this one, and a d3 global is exported:
 
 ```html
-<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3.v6.min.js"></script>
 <script src="https://rawcdn.githack.com/Kcnarf/d3-weighted-voronoi/v1.0.1/build/d3-weighted-voronoi.js"></script>
 <script src="https://rawcdn.githack.com/Kcnarf/d3-voronoi-map/v2.0.1build/d3-voronoi-map.js"></script>
 <script>
