@@ -35,7 +35,6 @@
     "uglify-js": "~>2.6.0"
   },
   "dependencies": {
-    "d3-array": "1.*",
     "d3-dispatch": "1.*",
     "d3-polygon": "1.*",
     "d3-timer": "1.*",
