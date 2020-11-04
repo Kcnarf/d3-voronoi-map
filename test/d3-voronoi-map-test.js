@@ -425,6 +425,36 @@ tape('voronoiMapSimulation.on(...)', function (test) {
   );
 });
 
+tape("Internal function 'handleOverweighted1(...)' shoul not loop indefinitly", function (test) {
+  // cf. https://github.com/Kcnarf/d3-voronoi-map/issues/10
+  const data = [
+      {
+        initialWeight: 1,
+        initialPos: [0, 0],
+      },
+      {
+        initialWeight: 4,
+        initialPos: [0.43038567576932785, 0.5019115451839844],
+      },
+    ],
+    initialPositioner = function (d) {
+      return d.initialPos;
+    },
+    initialWeighter = function (d) {
+      return d.initialWeight;
+    },
+    voronoiMapSimulation = d3VoronoiMap
+      .voronoiMapSimulation(data)
+      .initialPosition(initialPositioner)
+      .initialWeight(initialWeighter)
+      .stop();
+
+  let res = voronoiMapSimulation.state();
+
+  test.equal(res.polygons.length, 2);
+  test.end();
+});
+
 tape.test('voronoiMapSimulation should provide available intitial position policies', function (test) {
   test.equal(typeof d3VoronoiMap.voronoiMapInitialPositionRandom, 'function');
   test.equal(typeof d3VoronoiMap.voronoiMapInitialPositionPie, 'function');
