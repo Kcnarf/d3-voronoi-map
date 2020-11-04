@@ -20,7 +20,7 @@ export function voronoiMapSimulation(data) {
   var DEFAULT_INITIAL_POSITION = randomInitialPosition();
   var DEFAULT_INITIAL_WEIGHT = halfAverageAreaInitialWeight();
   var RANDOM_INITIAL_POSITION = randomInitialPosition();
-  var epsilon = 1;
+  var epsilon = 1e-10;
   //end: constants
 
   /////// Inputs ///////
@@ -457,10 +457,6 @@ export function voronoiMapSimulation(data) {
           }
         }
         if (fixApplied) {
-          // console.log('# fix: ' + fixCount);
-          // if (fixCount > 2) {
-          //   debugger;
-          // }
           break;
         }
       }
