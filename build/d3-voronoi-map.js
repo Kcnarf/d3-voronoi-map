@@ -367,7 +367,7 @@
     //end: constants
 
     /////// Inputs ///////
-    var weight = function(d) {
+    var weight = function (d) {
       return d.weight;
     }; // accessor to the weight
     var convergenceRatio = DEFAULT_CONVERGENCE_RATIO; // targeted allowed error ratio; default 0.01 stops computation when cell areas error <= 1% clipping polygon's area
@@ -397,7 +397,7 @@
     //end: internals/simulation
 
     //begin: algorithm conf.
-    var handleOverweightedVariant = 1; // this option still exists 'cause for further experiments
+    const HANDLE_OVERWEIGHTED_VARIANT = 1; // this option still exists 'cause for further experiments
     var handleOverweighted;
     //end: algorithm conf.
 
@@ -418,17 +418,17 @@
     simulation = {
       tick: tick,
 
-      restart: function() {
+      restart: function () {
         stepper.restart(step);
         return simulation;
       },
 
-      stop: function() {
+      stop: function () {
         stepper.stop();
         return simulation;
       },
 
-      weight: function(_) {
+      weight: function (_) {
         if (!arguments.length) {
           return weight;
         }
@@ -438,7 +438,7 @@
         return simulation;
       },
 
-      convergenceRatio: function(_) {
+      convergenceRatio: function (_) {
         if (!arguments.length) {
           return convergenceRatio;
         }
@@ -448,7 +448,7 @@
         return simulation;
       },
 
-      maxIterationCount: function(_) {
+      maxIterationCount: function (_) {
         if (!arguments.length) {
           return maxIterationCount;
         }
@@ -457,7 +457,7 @@
         return simulation;
       },
 
-      minWeightRatio: function(_) {
+      minWeightRatio: function (_) {
         if (!arguments.length) {
           return minWeightRatio;
         }
@@ -467,7 +467,7 @@
         return simulation;
       },
 
-      clip: function(_) {
+      clip: function (_) {
         if (!arguments.length) {
           return weightedVoronoi.clip();
         }
@@ -477,7 +477,7 @@
         return simulation;
       },
 
-      extent: function(_) {
+      extent: function (_) {
         if (!arguments.length) {
           return weightedVoronoi.extent();
         }
@@ -487,7 +487,7 @@
         return simulation;
       },
 
-      size: function(_) {
+      size: function (_) {
         if (!arguments.length) {
           return weightedVoronoi.size();
         }
@@ -497,7 +497,7 @@
         return simulation;
       },
 
-      prng: function(_) {
+      prng: function (_) {
         if (!arguments.length) {
           return prng;
         }
@@ -507,7 +507,7 @@
         return simulation;
       },
 
-      initialPosition: function(_) {
+      initialPosition: function (_) {
         if (!arguments.length) {
           return initialPosition;
         }
@@ -517,7 +517,7 @@
         return simulation;
       },
 
-      initialWeight: function(_) {
+      initialWeight: function (_) {
         if (!arguments.length) {
           return initialWeight;
         }
@@ -527,7 +527,7 @@
         return simulation;
       },
 
-      state: function() {
+      state: function () {
         if (shouldInitialize) {
           initializeSimulation();
         }
@@ -535,18 +535,18 @@
           ended: ended,
           iterationCount: iterationCount,
           convergenceRatio: areaError / totalArea,
-          polygons: polygons
+          polygons: polygons,
         };
       },
 
-      on: function(name, _) {
+      on: function (name, _) {
         if (arguments.length === 1) {
           return event.on(name);
         }
 
         event.on(name, _);
         return simulation;
-      }
+      },
     };
 
     ///////////////////////
@@ -599,20 +599,20 @@
     }
 
     function initialize(data, simulation) {
-      var maxWeight = data.reduce(function(max, d) {
+      var maxWeight = data.reduce(function (max, d) {
           return Math.max(max, weight(d));
         }, -Infinity),
         minAllowedWeight = maxWeight * minWeightRatio;
       var weights, mapPoints;
 
       //begin: extract weights
-      weights = data.map(function(d, i, arr) {
+      weights = data.map(function (d, i, arr) {
         return {
           index: i,
           weight: Math.max(weight(d), minAllowedWeight),
           initialPosition: initialPosition(d, i, arr, simulation),
           initialWeight: initialWeight(d, i, arr, simulation),
-          originalData: d
+          originalData: d,
         };
       });
       //end: extract weights
@@ -620,16 +620,17 @@
       // create map-related points
       // (with targetedArea, initial position and initialWeight)
       mapPoints = createMapPoints(weights, simulation);
+      handleOverweighted(mapPoints);
       return weightedVoronoi(mapPoints);
     }
 
     function createMapPoints(basePoints, simulation) {
-      var totalWeight = basePoints.reduce(function(acc, bp) {
+      var totalWeight = basePoints.reduce(function (acc, bp) {
         return (acc += bp.weight);
       }, 0);
       var initialPosition;
 
-      return basePoints.map(function(bp, i, bps) {
+      return basePoints.map(function (bp, i, bps) {
         initialPosition = bp.initialPosition;
 
         if (!d3Polygon.polygonContains(weightedVoronoi.clip(), initialPosition)) {
@@ -642,7 +643,7 @@
           data: bp,
           x: initialPosition[0],
           y: initialPosition[1],
-          weight: bp.initialWeight // ArlindNocaj/Voronoi-Treemap-Library uses an epsilonesque initial weight; using heavier initial weights allows faster weight adjustements, hence faster stabilization
+          weight: bp.initialWeight, // ArlindNocaj/Voronoi-Treemap-Library uses an epsilonesque initial weight; using heavier initial weights allows faster weight adjustements, hence faster stabilization
         };
       });
     }
@@ -651,7 +652,7 @@
       var adaptedMapPoints;
 
       adaptPositions(polygons, flickeringMitigationRatio);
-      adaptedMapPoints = polygons.map(function(p) {
+      adaptedMapPoints = polygons.map(function (p) {
         return p.site.originalObject;
       });
       polygons = weightedVoronoi(adaptedMapPoints);
@@ -661,7 +662,7 @@
       }
 
       adaptWeights(polygons, flickeringMitigationRatio);
-      adaptedMapPoints = polygons.map(function(p) {
+      adaptedMapPoints = polygons.map(function (p) {
         return p.site.originalObject;
       });
       polygons = weightedVoronoi(adaptedMapPoints);
@@ -766,8 +767,8 @@
       } while (fixApplied);
 
       /*
-      if (fixCount>0) {
-        console.log("# fix: "+fixCount);
+      if (fixCount > 0) {
+        console.log('# fix: ' + fixCount);
       }
       */
     }
@@ -799,14 +800,18 @@
             }
           }
           if (fixApplied) {
+            // console.log('# fix: ' + fixCount);
+            // if (fixCount > 2) {
+            //   debugger;
+            // }
             break;
           }
         }
       } while (fixApplied);
 
       /*
-      if (fixCount>0) {
-        console.log("# fix: "+fixCount);
+      if (fixCount > 0) {
+        console.log('# fix: ' + fixCount);
       }
       */
     }
@@ -825,7 +830,7 @@
     }
 
     function setHandleOverweighted() {
-      switch (handleOverweightedVariant) {
+      switch (HANDLE_OVERWEIGHTED_VARIANT) {
         case 0:
           handleOverweighted = handleOverweighted0;
           break;

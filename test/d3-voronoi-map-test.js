@@ -1,9 +1,9 @@
 const tape = require('tape'),
   d3VoronoiMap = require('../build/d3-voronoi-map');
 
-tape('voronoiMapSimulation(...) should set the expected defaults', function(test) {
+tape('voronoiMapSimulation(...) should set the expected defaults', function (test) {
   const datum = {
-      weight: 1
+      weight: 1,
     },
     voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).stop();
 
@@ -11,20 +11,25 @@ tape('voronoiMapSimulation(...) should set the expected defaults', function(test
   test.equal(voronoiMapSimulation.convergenceRatio(), 0.01);
   test.equal(voronoiMapSimulation.maxIterationCount(), 50);
   test.equal(voronoiMapSimulation.minWeightRatio(), 0.01);
-  test.deepEqual(voronoiMapSimulation.clip(), [[0, 0], [0, 1], [1, 1], [1, 0]]);
+  test.deepEqual(voronoiMapSimulation.clip(), [
+    [0, 0],
+    [0, 1],
+    [1, 1],
+    [1, 0],
+  ]);
   test.equal(voronoiMapSimulation.prng(), Math.random);
   test.equal(voronoiMapSimulation.on('tick'), undefined);
   test.equal(voronoiMapSimulation.on('end'), undefined);
   test.end();
 });
 
-tape('voronoiMapSimulation.weight(...) should set the specified weight-accessor', function(test) {
+tape('voronoiMapSimulation.weight(...) should set the specified weight-accessor', function (test) {
   const datum = {
       weight: 1,
-      weightPrime: 2
+      weightPrime: 2,
     },
     voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).stop(),
-    newAccessor = function(d) {
+    newAccessor = function (d) {
       return d.weightPrime;
     };
 
@@ -36,52 +41,84 @@ tape('voronoiMapSimulation.weight(...) should set the specified weight-accessor'
 
 tape(
   'voronoiMapSimulation.clip(...) should set the adequate convex, hole-free, counterclockwise clipping polygon, extent and size',
-  function(test) {
+  function (test) {
     const datum = {
-        weight: 1
+        weight: 1,
       },
       voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).stop(),
-      newClip = [[1, 1], [1, 3], [3, 1], [3, 3]]; //self-intersecting polygon
+      newClip = [
+        [1, 1],
+        [1, 3],
+        [3, 1],
+        [3, 3],
+      ]; //self-intersecting polygon
 
     test.equal(voronoiMapSimulation.clip(newClip), voronoiMapSimulation);
-    test.deepEqual(voronoiMapSimulation.clip(), [[3, 3], [3, 1], [1, 1], [1, 3]]);
-    test.deepEqual(voronoiMapSimulation.extent(), [[1, 1], [3, 3]]);
+    test.deepEqual(voronoiMapSimulation.clip(), [
+      [3, 3],
+      [3, 1],
+      [1, 1],
+      [1, 3],
+    ]);
+    test.deepEqual(voronoiMapSimulation.extent(), [
+      [1, 1],
+      [3, 3],
+    ]);
     test.deepEqual(voronoiMapSimulation.size(), [2, 2]);
     test.end();
   }
 );
 
-tape('voronoiMapSimulation.extent(...) should set adequate extent, clipping polygon and size', function(test) {
+tape('voronoiMapSimulation.extent(...) should set adequate extent, clipping polygon and size', function (test) {
   const datum = {
-      weight: 1
+      weight: 1,
     },
     voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).stop(),
-    newExtent = [[1, 1], [3, 3]];
+    newExtent = [
+      [1, 1],
+      [3, 3],
+    ];
 
   test.equal(voronoiMapSimulation.extent(newExtent), voronoiMapSimulation);
-  test.deepEqual(voronoiMapSimulation.clip(), [[1, 1], [1, 3], [3, 3], [3, 1]]);
-  test.deepEqual(voronoiMapSimulation.extent(), [[1, 1], [3, 3]]);
+  test.deepEqual(voronoiMapSimulation.clip(), [
+    [1, 1],
+    [1, 3],
+    [3, 3],
+    [3, 1],
+  ]);
+  test.deepEqual(voronoiMapSimulation.extent(), [
+    [1, 1],
+    [3, 3],
+  ]);
   test.deepEqual(voronoiMapSimulation.size(), [2, 2]);
   test.end();
 });
 
-tape('voronoiMap.size(...) should set adequate size, clipping polygon and extent', function(test) {
+tape('voronoiMap.size(...) should set adequate size, clipping polygon and extent', function (test) {
   const datum = {
-      weight: 1
+      weight: 1,
     },
     voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).stop(),
     newSize = [2, 3];
 
   test.equal(voronoiMapSimulation.size(newSize), voronoiMapSimulation);
-  test.deepEqual(voronoiMapSimulation.clip(), [[0, 0], [0, 3], [2, 3], [2, 0]]);
-  test.deepEqual(voronoiMapSimulation.extent(), [[0, 0], [2, 3]]);
+  test.deepEqual(voronoiMapSimulation.clip(), [
+    [0, 0],
+    [0, 3],
+    [2, 3],
+    [2, 0],
+  ]);
+  test.deepEqual(voronoiMapSimulation.extent(), [
+    [0, 0],
+    [2, 3],
+  ]);
   test.deepEqual(voronoiMapSimulation.size(), [2, 3]);
   test.end();
 });
 
-tape('voronoiMapSimulation.convergenceRatio(...) should set the specified convergence treshold', function(test) {
+tape('voronoiMapSimulation.convergenceRatio(...) should set the specified convergence treshold', function (test) {
   const datum = {
-      weight: 1
+      weight: 1,
     },
     voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).stop();
 
@@ -90,11 +127,11 @@ tape('voronoiMapSimulation.convergenceRatio(...) should set the specified conver
   test.end();
 });
 
-tape('voronoiMapSimulation.maxIterationCount(...) should set the specified allowed number of iterations', function(
+tape('voronoiMapSimulation.maxIterationCount(...) should set the specified allowed number of iterations', function (
   test
 ) {
   const datum = {
-      weight: 1
+      weight: 1,
     },
     voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).stop();
 
@@ -103,9 +140,9 @@ tape('voronoiMapSimulation.maxIterationCount(...) should set the specified allow
   test.end();
 });
 
-tape('voronoiMapSimulation.minWeightRatio(...) should set the specified ratio', function(test) {
+tape('voronoiMapSimulation.minWeightRatio(...) should set the specified ratio', function (test) {
   const datum = {
-      weight: 1
+      weight: 1,
     },
     voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).stop();
 
@@ -114,11 +151,11 @@ tape('voronoiMapSimulation.minWeightRatio(...) should set the specified ratio', 
   test.end();
 });
 
-tape('voronoiMapSimulation.prng(...) should set the specified pseudorandom number generator', function(test) {
+tape('voronoiMapSimulation.prng(...) should set the specified pseudorandom number generator', function (test) {
   const datum = {
-      weight: 1
+      weight: 1,
     },
-    myprng = function() {
+    myprng = function () {
       return Math.random();
     },
     voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).stop();
@@ -128,14 +165,14 @@ tape('voronoiMapSimulation.prng(...) should set the specified pseudorandom numbe
   test.end();
 });
 
-tape('voronoiMapSimulation.initialPosition(...)', function(test) {
-  test.test('voronoiMapSimulation.initialPosition(...) should set the specified callback', function(test) {
+tape('voronoiMapSimulation.initialPosition(...)', function (test) {
+  test.test('voronoiMapSimulation.initialPosition(...) should set the specified callback', function (test) {
     const datum = {
         weight: 1,
         precomputedX: 0.3,
-        precomputedY: 0.7
+        precomputedY: 0.7,
       },
-      newAccessor = function(d, i, arr, clippingPolygon) {
+      newAccessor = function (d, i, arr, clippingPolygon) {
         return [d.precomputedX, d.precomputedY];
       },
       voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).stop();
@@ -148,19 +185,16 @@ tape('voronoiMapSimulation.initialPosition(...)', function(test) {
 
   test.test(
     'voronoiMapSimulation.initialPosition(...) should fallback to a random position if specified callback returns a position ouside the clipping polygon',
-    function(test) {
+    function (test) {
       const datum = {
           weight: 1,
           precomputedX: 2,
-          precomputedY: 3
+          precomputedY: 3,
         },
-        newAccessor = function(d, i, arr, clippingPolygon) {
+        newAccessor = function (d, i, arr, clippingPolygon) {
           return [d.precomputedX, d.precomputedY];
         },
-        voronoiMapSimulation = d3VoronoiMap
-          .voronoiMapSimulation([datum])
-          .initialPosition(newAccessor)
-          .stop();
+        voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).initialPosition(newAccessor).stop();
 
       const res = voronoiMapSimulation.state(),
         initX = res.polygons[0].site.originalObject.x,
@@ -176,16 +210,16 @@ tape('voronoiMapSimulation.initialPosition(...)', function(test) {
 
   test.test(
     'voronoiMapSimulation.initialPosition(...) should fallback to a random position if specified callback returns unexpected results',
-    function(test) {
+    function (test) {
       const datum = {
           weight: 1,
           precomputedX: 2,
-          precomputedY: 2
+          precomputedY: 2,
         },
         voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).stop();
       let newAccessor, res, initX, initY;
 
-      newAccessor = function(d, i, arr, clippingPolygon) {
+      newAccessor = function (d, i, arr, clippingPolygon) {
         return [d.precomputedX, NaN];
       }; // NaN
       res = voronoiMapSimulation.initialPosition(newAccessor).state();
@@ -194,7 +228,7 @@ tape('voronoiMapSimulation.initialPosition(...)', function(test) {
       test.ok(initX > 0 && initX < 1);
       test.ok(initY > 0 && initY < 1);
 
-      newAccessor = function(d, i, arr, clippingPolygon) {
+      newAccessor = function (d, i, arr, clippingPolygon) {
         return [undefined, d.precomputedY];
       }; // undefined
       res = voronoiMapSimulation.initialPosition(newAccessor).state();
@@ -203,7 +237,7 @@ tape('voronoiMapSimulation.initialPosition(...)', function(test) {
       test.ok(initX > 0 && initX < 1);
       test.ok(initY > 0 && initY < 1);
 
-      newAccessor = function(d, i, arr, clippingPolygon) {
+      newAccessor = function (d, i, arr, clippingPolygon) {
         return [d.precomputedX, null];
       }; // null
       res = voronoiMapSimulation.initialPosition(newAccessor).state();
@@ -212,7 +246,7 @@ tape('voronoiMapSimulation.initialPosition(...)', function(test) {
       test.ok(initX > 0 && initX < 1);
       test.ok(initY > 0 && initY < 1);
 
-      newAccessor = function(d, i, arr, clippingPolygon) {
+      newAccessor = function (d, i, arr, clippingPolygon) {
         return ['foo', d.precomputedY];
       }; // not a number
       res = voronoiMapSimulation.initialPosition(newAccessor).state();
@@ -221,7 +255,7 @@ tape('voronoiMapSimulation.initialPosition(...)', function(test) {
       test.ok(initX > 0 && initX < 1);
       test.ok(initY > 0 && initY < 1);
 
-      newAccessor = function(d, i, arr, clippingPolygon) {
+      newAccessor = function (d, i, arr, clippingPolygon) {
         return d.precomputedY;
       }; // not an array
       res = voronoiMapSimulation.initialPosition(newAccessor).state();
@@ -235,18 +269,25 @@ tape('voronoiMapSimulation.initialPosition(...)', function(test) {
   );
 });
 
-tape('voronoiMapSimulation.state()', function(test) {
-  test.test('should reflect inner state of the simulation', function(test) {
+tape('voronoiMapSimulation.state()', function (test) {
+  test.test('should reflect inner state of the simulation', function (test) {
+    // places sites in order to be sure that some ticks are required to obtain stabilization
     const data = [
         {
-          weight: 1
+          weight: 1,
+          initialPos: [0, 0],
         },
         {
-          weight: 1
-        }
+          weight: 1,
+          initialPos: [0.5, 0.5],
+        },
       ],
+      initialPositioner = function (d) {
+        return d.initialPos;
+      },
       voronoiMapSimulation = d3VoronoiMap
         .voronoiMapSimulation(data)
+        .initialPosition(initialPositioner)
         .maxIterationCount(2)
         .stop();
 
@@ -268,60 +309,93 @@ tape('voronoiMapSimulation.state()', function(test) {
     test.end();
   });
 
-  test.test('if called before any tick, should initialize the simulation with up-to-date config.', function(test) {
+  test.test('if called before any tick, should initialize the simulation with up-to-date config.', function (test) {
+    // uses initial positions for repeatable results (overcoming initial random positioning policy)
     const data = [
         {
-          weight: 1,
-          weightPrime: 2
+          initialWeight: 2,
+          initialPos: [0.2, 0.2],
         },
         {
-          weight: 1,
-          weightPrime: 2
-        }
+          initialWeight: 2,
+          initialPos: [0.8, 0.8],
+        },
       ],
-      newAccessor = function(d) {
-        return d.weightPrime;
+      initialPositioner = function (d) {
+        return d.initialPos;
+      },
+      initialWeigher = function (d) {
+        return d.initialWeight;
       },
       voronoiMapSimulation = d3VoronoiMap
         .voronoiMapSimulation(data)
-        .weight(newAccessor)
+        .weight(initialWeigher)
+        .initialPosition(initialPositioner)
         .stop();
 
     //voronoiMapSimulation.tick();
     let res = voronoiMapSimulation.state();
 
     test.equal(res.polygons.length, 2);
-    test.equal(res.polygons[0].site.originalObject.data.weight, 2); // check up-to-date config (i.e. used weight accessor is the defined one)
+    test.equal(res.polygons[0].site.originalObject.data.weight, 2);
+    // TODO check positioner
     test.equal(res.iterationCount, 0);
     test.ok(isNaN(res.convergenceRatio));
     test.equal(res.ended, false);
     test.end();
   });
-});
 
-tape('voronoiMapSimulation.on(...)', function(test) {
-  test.test("voronoiMapSimulation.on('tick', ...) should set the specified callback", function(test) {
-    const datum = {
-        weight: 1
+  test.test('if called before any tick, should handle configuration with overweighted sites', function (test) {
+    // uses initial positions for repeatable results (overcoming initial random positioning policy)
+    const data = [
+        {
+          initialWeight: 1,
+          initialPos: [0.2, 0.2],
+        },
+        {
+          initialWeight: 4,
+          initialPos: [0.8, 0.8],
+        },
+      ],
+      initialPositioner = function (d) {
+        return d.initialPos;
       },
-      onTick = function() {
-        return true;
+      initialWeighter = function (d) {
+        return d.initialWeight;
       },
       voronoiMapSimulation = d3VoronoiMap
-        .voronoiMapSimulation([datum])
-        .maxIterationCount(1)
+        .voronoiMapSimulation(data)
+        .initialPosition(initialPositioner)
+        .initialWeight(initialWeighter)
         .stop();
+
+    let res = voronoiMapSimulation.state();
+
+    test.equal(res.polygons.length, 2);
+    test.end();
+  });
+});
+
+tape('voronoiMapSimulation.on(...)', function (test) {
+  test.test("voronoiMapSimulation.on('tick', ...) should set the specified callback", function (test) {
+    const datum = {
+        weight: 1,
+      },
+      onTick = function () {
+        return true;
+      },
+      voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).maxIterationCount(1).stop();
 
     test.equal(voronoiMapSimulation.on('tick', onTick), voronoiMapSimulation);
     test.equal(voronoiMapSimulation.on('tick'), onTick);
     test.end();
   });
 
-  test.test("voronoiMapSimulation.on('end', ...) should set the specified callback", function(test) {
+  test.test("voronoiMapSimulation.on('end', ...) should set the specified callback", function (test) {
     const datum = {
-        weight: 1
+        weight: 1,
       },
-      onEnd = function() {
+      onEnd = function () {
         return true;
       },
       voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).stop();
@@ -333,28 +407,25 @@ tape('voronoiMapSimulation.on(...)', function(test) {
 
   tape(
     "voronoiMapSimulation simulation should send 'tick' and 'end' events, and execute respective callbacks",
-    function(test) {
+    function (test) {
       let i = 0;
       const datum = {
-          weight: 1
+          weight: 1,
         },
-        onTick = function() {
+        onTick = function () {
           i++;
         },
-        onEnd = function() {
+        onEnd = function () {
           test.equal(i, 1);
           //only one iteration because the only one datum fills the entire clipping polygon
           test.end();
         },
-        voronoiMapSimulation = d3VoronoiMap
-          .voronoiMapSimulation([datum])
-          .on('tick', onTick)
-          .on('end', onEnd);
+        voronoiMapSimulation = d3VoronoiMap.voronoiMapSimulation([datum]).on('tick', onTick).on('end', onEnd);
     }
   );
 });
 
-tape.test('voronoiMapSimulation should provide available intitial position policies', function(test) {
+tape.test('voronoiMapSimulation should provide available intitial position policies', function (test) {
   test.equal(typeof d3VoronoiMap.voronoiMapInitialPositionRandom, 'function');
   test.equal(typeof d3VoronoiMap.voronoiMapInitialPositionPie, 'function');
   test.end();
