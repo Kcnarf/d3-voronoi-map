@@ -10,6 +10,7 @@ import { FlickeringMitigation } from './flickering-mitigation';
 import randomInitialPosition from './initial-position-policies/random';
 import pieInitialPosition from './initial-position-policies/pie';
 import halfAverageAreaInitialWeight from './initial-weight-policies/half-average-area';
+import d3VoronoiMapError from './d3-voronoi-map-error';
 
 export function voronoiMapSimulation(data) {
   //begin: constants
@@ -55,6 +56,7 @@ export function voronoiMapSimulation(data) {
 
   //begin: algorithm conf.
   const HANDLE_OVERWEIGHTED_VARIANT = 1; // this option still exists 'cause for further experiments
+  const HANLDE_OVERWEIGHTED_MAX_ITERATION_COUNT = 1000; // max number of tries to handle overweigthed sites
   var handleOverweighted;
   //end: algorithm conf.
 
@@ -314,8 +316,7 @@ export function voronoiMapSimulation(data) {
     });
     polygons = weightedVoronoi(adaptedMapPoints);
     if (polygons.length < siteCount) {
-      console.log('at least 1 site has no area, which is not supposed to arise');
-      debugger;
+      throw new d3VoronoiMapError('at least 1 site has no area, which is not supposed to arise');
     }
 
     adaptWeights(polygons, flickeringMitigationRatio);
@@ -324,8 +325,7 @@ export function voronoiMapSimulation(data) {
     });
     polygons = weightedVoronoi(adaptedMapPoints);
     if (polygons.length < siteCount) {
-      console.log('at least 1 site has no area, which is not supposed to arise');
-      debugger;
+      throw new d3VoronoiMapError('at least 1 site has no area, which is not supposed to arise');
     }
 
     return polygons;
@@ -393,6 +393,9 @@ export function voronoiMapSimulation(data) {
     var fixCount = 0;
     var fixApplied, tpi, tpj, weightest, lightest, sqrD, adaptedWeight;
     do {
+      if (fixCount > HANLDE_OVERWEIGHTED_MAX_ITERATION_COUNT) {
+        throw new d3VoronoiMapError('handleOverweighted0 is looping too much');
+      }
       fixApplied = false;
       for (var i = 0; i < siteCount; i++) {
         tpi = mapPoints[i];
@@ -435,6 +438,9 @@ export function voronoiMapSimulation(data) {
     var fixCount = 0;
     var fixApplied, tpi, tpj, weightest, lightest, sqrD, overweight;
     do {
+      if (fixCount > HANLDE_OVERWEIGHTED_MAX_ITERATION_COUNT) {
+        throw new d3VoronoiMapError('handleOverweighted1 is looping too much');
+      }
       fixApplied = false;
       for (var i = 0; i < siteCount; i++) {
         tpi = mapPoints[i];
@@ -491,7 +497,8 @@ export function voronoiMapSimulation(data) {
         handleOverweighted = handleOverweighted1;
         break;
       default:
-        console.log("Variant of 'handleOverweighted' is unknown");
+        console.error("unknown 'handleOverweighted' variant; using variant #1");
+        handleOverweighted = handleOverweighted0;
     }
   }
 
