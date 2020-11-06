@@ -455,8 +455,14 @@ tape("Internal function 'handleOverweighted1(...)' shoul not loop indefinitly", 
   test.end();
 });
 
-tape.test('voronoiMapSimulation should provide available intitial position policies', function (test) {
+tape.test('Package should provide available intitial position policies', function (test) {
   test.equal(typeof d3VoronoiMap.voronoiMapInitialPositionRandom, 'function');
   test.equal(typeof d3VoronoiMap.voronoiMapInitialPositionPie, 'function');
+  test.end();
+});
+
+tape.test('Package should provide d3VoronoiMapError', function (test) {
+  test.ok(d3VoronoiMap.d3VoronoiMapError);
+  test.ok(new d3VoronoiMap.d3VoronoiMapError('test') instanceof Error);
   test.end();
 });
