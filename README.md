@@ -330,27 +330,3 @@ Regarding the API:
 
 d3-voronoi-map attempts to follow [semantic versioning](https://semver.org) and
 bump major version only when backwards incompatible changes are released.
-
-## Testing
-
-In order to test the code
-
-```sh
-git clone https://github.com/Kcnarf/d3-voronoi-map.git
-[...]
-yarn install
-[...]
-yarn test
-```
-
-## Commit
-
-In order to commit some code
-
-```sh
-git clone https://github.com/Kcnarf/d3-voronoi-map.git
-[...]
-yarn install
-[...]
-yarn precommit
-```
