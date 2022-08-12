@@ -35,9 +35,9 @@
     "uglify-js": "~>2.6.0"
   },
   "dependencies": {
-    "d3-dispatch": "1.*",
-    "d3-polygon": "1.*",
-    "d3-timer": "1.*",
+    "d3-dispatch": "2.*",
+    "d3-polygon": "2.*",
+    "d3-timer": "2.*",
     "d3-weighted-voronoi": "1.*"
   }
 }
