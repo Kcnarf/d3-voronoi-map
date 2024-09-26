@@ -30,7 +30,7 @@
     "prepublish": "yarn run precommit && zip -j build/d3-voronoi-map.zip -- LICENSE README.md build/d3-voronoi-map.js build/d3-voronoi-map.min.js"
   },
   "devDependencies": {
-    "rollup": "0.27",
+    "rollup": "2.79",
     "tape": "4",
     "uglify-js": "~>2.6.0"
   },
